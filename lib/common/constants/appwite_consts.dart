@@ -3,7 +3,7 @@ class AppwriteConstants {
   static const String projectId = '64fef7197fee0b9f571c';
   static const String endPoint = 'https://cloud.appwrite.io/v1';
 
-  static const String studentsCollection = '';
+  static const String studentsCollection = 'STUDENTS';
   static const String credentialCollection = 'CREDENTIALS_ID';
 
   static const String filesBucket = '';

@@ -24,11 +24,11 @@ class StudentApi implements IStudentApi {
         _account = account;
   @override
   Future<Document> getStudentData() async {
-    final prefs = await _account.getPrefs();
+    final prefs = await _account.getPrefs().then((value) => value.data);
     return _db.getDocument(
       databaseId: AppwriteConstants.databaseId,
       collectionId: AppwriteConstants.studentsCollection,
-      documentId: prefs.data['studentNumber'],
+      documentId: prefs['studentNumber'],
     );
   }
 }

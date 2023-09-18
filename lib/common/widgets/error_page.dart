@@ -10,15 +10,6 @@ class ErrorPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: Container(
-          color: Colors.white,
-          width: 50,
-          child: Image.asset(
-            'assets/wsu.png',
-          ),
-        ),
-      ),
       body: SafeArea(
         child: Center(
           child: Text(

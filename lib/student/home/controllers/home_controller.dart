@@ -28,7 +28,6 @@ class HomeController extends StateNotifier<bool> {
   Future<StudentModel> getUserData() async {
     final document = await _studentApi.getStudentData();
     final updatedUser = StudentModel.fromMap(document.data);
-    print(updatedUser);
     return updatedUser;
   }
 

@@ -7,17 +7,8 @@ class LoadingPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: Container(
-          color: Colors.white,
-          width: 50,
-          child: Image.asset(
-            'assets/wsu.png',
-          ),
-        ),
-      ),
-      body: const SafeArea(
+    return const Scaffold(
+      body: SafeArea(
           child: Center(
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,

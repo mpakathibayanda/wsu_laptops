@@ -25,14 +25,15 @@ class MyApp extends ConsumerWidget {
       theme: ThemeData(
           useMaterial3: true,
           brightness: Brightness.light,
+          scaffoldBackgroundColor: const Color.fromARGB(255, 157, 199, 233),
           elevatedButtonTheme: ElevatedButtonThemeData(
             style: ElevatedButton.styleFrom(
               backgroundColor: Colors.blueAccent,
+              textStyle: const TextStyle(color: Colors.black),
             ),
           )),
       home: ref.watch(currentUserAccountProvider).when(
             data: (user) {
-              print(user?.$id);
               if (user != null) {
                 return const HomeView();
               }

@@ -32,6 +32,12 @@ class _AuthPageState extends ConsumerState<AuthView> {
   }
 
   @override
+  void initState() {
+    ref.read(authControllerProvider).resetPrefs();
+    super.initState();
+  }
+
+  @override
   void dispose() {
     studentNumberTxtCtrl.dispose();
     pinTxtCtrl.dispose();

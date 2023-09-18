@@ -34,12 +34,18 @@ class AuthController extends StateNotifier<bool> {
       (l) {
         showLoadingDialog(context: context, done: true);
         showErrorDialog(context: context, error: l.message ?? 'ERROR');
+        print(l.message);
+        print(l.stackTrace);
       },
       (r) {
         showLoadingDialog(context: context, done: true);
         Navigator.pushReplacement(context, HomeView.route());
       },
     );
+  }
+
+  void resetPrefs() async {
+    await _authAPI.resetPrefs();
   }
 
   void logout() async {

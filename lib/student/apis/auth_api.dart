@@ -16,6 +16,7 @@ final authAPIProvider = Provider((ref) {
 abstract class IAuthAPI {
   FutureEitherVoid login({required String studentNumber, required String pin});
   Future<User?> currentUserAccount();
+  FutureEitherVoid resetPrefs();
   FutureEitherVoid logout();
 }
 
@@ -30,7 +31,10 @@ class AuthAPI implements IAuthAPI {
   FutureEitherVoid login(
       {required String studentNumber, required String pin}) async {
     try {
-      await _account.createAnonymousSession();
+      await _account.createEmailSession(
+        email: 'test@gmail.com',
+        password: 'Test1234',
+      );
       final doc = await _db.getDocument(
         databaseId: AppwriteConstants.databaseId,
         collectionId: AppwriteConstants.credentialCollection,
@@ -38,7 +42,9 @@ class AuthAPI implements IAuthAPI {
       );
       Map cred = doc.data;
       if (cred['pin'] == pin) {
-        _account.updatePrefs(prefs: {'studentNumber': studentNumber});
+        await _account.updatePrefs(
+          prefs: <String, String>{'studentNumber': studentNumber},
+        );
         return right(null);
       } else {
         logout();
@@ -49,18 +55,21 @@ class AuthAPI implements IAuthAPI {
     } on AppwriteException catch (e, stackTrace) {
       logout();
       if (e.code == 404) {
-        return left(const Failure(message: 'Invalid credentials'));
+        return left(
+          const Failure(message: 'Invalid credentials'),
+        );
       }
+
       return left(
         Failure(
-          message: e.message ?? 'Something went wrong',
+          message: e.message ?? 'Something went wrong?',
           stackTrace: stackTrace,
         ),
       );
     } catch (e, stackTrace) {
       logout();
       return left(
-        Failure(message: 'Something went wrong', stackTrace: stackTrace),
+        Failure(message: e.toString(), stackTrace: stackTrace),
       );
     }
   }
@@ -68,7 +77,9 @@ class AuthAPI implements IAuthAPI {
   @override
   FutureEitherVoid logout() async {
     try {
+      await _account.updatePrefs(prefs: {'studentNumber': ''});
       await _account.deleteSession(sessionId: 'current');
+
       return right(null);
     } on AppwriteException catch (e, stackTrace) {
       return left(
@@ -92,6 +103,25 @@ class AuthAPI implements IAuthAPI {
       return null;
     } catch (e) {
       return null;
+    }
+  }
+
+  @override
+  FutureEitherVoid resetPrefs() async {
+    try {
+      await _account.updatePrefs(prefs: {'studentNumber': ''});
+      return right(null);
+    } on AppwriteException catch (e, stackTrace) {
+      return left(
+        Failure(
+          message: e.message ?? 'Some unexpected error occurred',
+          stackTrace: stackTrace,
+        ),
+      );
+    } catch (e, stackTrace) {
+      return left(
+        Failure(message: e.toString(), stackTrace: stackTrace),
+      );
     }
   }
 }
