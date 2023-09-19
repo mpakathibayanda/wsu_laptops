@@ -6,7 +6,6 @@ import 'package:fpdart/fpdart.dart';
 import 'package:wsu_laptops/common/constants/appwite_consts.dart';
 import 'package:wsu_laptops/common/core/failure.dart';
 import 'package:wsu_laptops/common/core/providers.dart';
-import 'package:wsu_laptops/common/core/type_defs.dart';
 
 final authAPIProvider = Provider((ref) {
   final account = ref.watch(appwriteAccountProvider);
