@@ -1,5 +1,6 @@
 import 'package:appwrite/appwrite.dart';
 import 'package:appwrite/models.dart';
+import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:fpdart/fpdart.dart';
 import 'package:wsu_laptops/common/constants/appwite_consts.dart';
@@ -67,18 +68,22 @@ class AuthAPI implements IAuthAPI {
         ),
       );
     } catch (e, stackTrace) {
-      logout();
-      return left(
-        Failure(message: e.toString(), stackTrace: stackTrace),
-      );
+      if (e.toString().contains('Expected')) {
+        return right(null);
+      } else {
+        logout();
+        return left(
+          Failure(message: e.toString(), stackTrace: stackTrace),
+        );
+      }
     }
   }
 
   @override
   FutureEitherVoid logout() async {
     try {
-      await _account.updatePrefs(prefs: {'studentNumber': ''});
       await _account.deleteSession(sessionId: 'current');
+      debugPrint('logged out');
 
       return right(null);
     } on AppwriteException catch (e, stackTrace) {
@@ -89,6 +94,7 @@ class AuthAPI implements IAuthAPI {
         ),
       );
     } catch (e, stackTrace) {
+      print(e.toString());
       return left(
         Failure(message: e.toString(), stackTrace: stackTrace),
       );
@@ -119,6 +125,9 @@ class AuthAPI implements IAuthAPI {
         ),
       );
     } catch (e, stackTrace) {
+      if (e.toString().contains('Expected')) {
+        return right(null);
+      }
       return left(
         Failure(message: e.toString(), stackTrace: stackTrace),
       );

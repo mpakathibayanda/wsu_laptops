@@ -34,6 +34,7 @@ class _AuthPageState extends ConsumerState<AuthView> {
   @override
   void initState() {
     ref.read(authControllerProvider).resetPrefs();
+    ref.read(authControllerProvider).logout();
     super.initState();
   }
 

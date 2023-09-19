@@ -34,8 +34,9 @@ class AuthController extends StateNotifier<bool> {
       (l) {
         showLoadingDialog(context: context, done: true);
         showErrorDialog(context: context, error: l.message ?? 'ERROR');
-        print(l.message);
-        print(l.stackTrace);
+
+        // print(l.message);
+        // print(l.stackTrace);
       },
       (r) {
         showLoadingDialog(context: context, done: true);
