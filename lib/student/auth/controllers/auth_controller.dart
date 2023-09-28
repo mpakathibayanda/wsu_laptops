@@ -2,6 +2,7 @@ import 'package:appwrite/models.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:wsu_laptops/common/core/utils.dart';
+import 'package:wsu_laptops/common/models/student_model.dart';
 import 'package:wsu_laptops/student/apis/auth_api.dart';
 import 'package:wsu_laptops/student/home/views/home_view.dart';
 
@@ -34,19 +35,18 @@ class AuthController extends StateNotifier<bool> {
       (l) {
         showLoadingDialog(context: context, done: true);
         showErrorDialog(context: context, error: l.message ?? 'ERROR');
-
-        // print(l.message);
-        // print(l.stackTrace);
       },
       (r) {
+        StudentModel student = StudentModel.fromMap(r.data);
         showLoadingDialog(context: context, done: true);
-        Navigator.pushReplacement(context, HomeView.route());
+        Navigator.pushReplacement(
+          context,
+          MaterialPageRoute(
+            builder: (context) => HomeView(student.studentNumber),
+          ),
+        );
       },
     );
-  }
-
-  void resetPrefs() async {
-    await _authAPI.resetPrefs();
   }
 
   void logout() async {

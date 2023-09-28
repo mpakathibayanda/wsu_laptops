@@ -11,8 +11,10 @@ final homeControllerProvider =
   );
 });
 
-final studentDataProvider = FutureProvider((ref) {
-  return ref.watch(homeControllerProvider.notifier).getUserData();
+final getUserDataProvider = FutureProvider.family((ref, String id) async {
+  return ref
+      .watch(homeControllerProvider.notifier)
+      .getUserData(studentNumber: id);
 });
 
 class HomeController extends StateNotifier<bool> {
@@ -25,8 +27,9 @@ class HomeController extends StateNotifier<bool> {
   final StudentApi _studentApi;
   final AuthAPI _authAPI;
 
-  Future<StudentModel> getUserData() async {
-    final document = await _studentApi.getStudentData();
+  Future<StudentModel> getUserData({required String studentNumber}) async {
+    final document =
+        await _studentApi.getStudentData(studentNumber: studentNumber);
     final updatedUser = StudentModel.fromMap(document.data);
     return updatedUser;
   }

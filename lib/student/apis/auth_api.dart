@@ -1,11 +1,12 @@
 import 'package:appwrite/appwrite.dart';
 import 'package:appwrite/models.dart';
-import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:fpdart/fpdart.dart';
+import 'package:logger/logger.dart';
 import 'package:wsu_laptops/common/constants/appwite_consts.dart';
 import 'package:wsu_laptops/common/core/failure.dart';
 import 'package:wsu_laptops/common/core/providers.dart';
+import 'package:wsu_laptops/common/core/type_defs.dart';
 
 final authAPIProvider = Provider((ref) {
   final account = ref.watch(appwriteAccountProvider);
@@ -14,21 +15,22 @@ final authAPIProvider = Provider((ref) {
 });
 
 abstract class IAuthAPI {
-  FutureEitherVoid login({required String studentNumber, required String pin});
+  FutureEither<Document> login(
+      {required String studentNumber, required String pin});
   Future<User?> currentUserAccount();
-  FutureEitherVoid resetPrefs();
   FutureEitherVoid logout();
 }
 
 class AuthAPI implements IAuthAPI {
   final Account _account;
   final Databases _db;
+  final Logger _logger = Logger();
   AuthAPI({required Account account, required db})
       : _account = account,
         _db = db;
 
   @override
-  FutureEitherVoid login(
+  FutureEither<Document> login(
       {required String studentNumber, required String pin}) async {
     try {
       await _account.createEmailSession(
@@ -36,23 +38,28 @@ class AuthAPI implements IAuthAPI {
         password: 'Test1234',
       );
       final doc = await _db.getDocument(
-        databaseId: AppwriteConstants.databaseId,
-        collectionId: AppwriteConstants.credentialCollection,
+        databaseId: AppwriteConstants.studentsDatabaseId,
+        collectionId: AppwriteConstants.studentsCollection,
         documentId: studentNumber,
       );
       Map cred = doc.data;
       if (cred['pin'] == pin) {
-        await _account.updatePrefs(
-          prefs: <String, String>{'studentNumber': studentNumber},
-        );
-        return right(null);
+        _logger.i('Logged in succefully');
+        return right(doc);
       } else {
         logout();
+        _logger.w('Invalid credentials');
         return left(
           const Failure(message: 'Invalid credentials'),
         );
       }
     } on AppwriteException catch (e, stackTrace) {
+      _logger.e(
+        e.message,
+        error: e,
+        stackTrace: stackTrace,
+        time: DateTime.now(),
+      );
       logout();
       if (e.code == 404) {
         return left(
@@ -67,14 +74,16 @@ class AuthAPI implements IAuthAPI {
         ),
       );
     } catch (e, stackTrace) {
-      if (e.toString().contains('Expected')) {
-        return right(null);
-      } else {
-        logout();
-        return left(
-          Failure(message: e.toString(), stackTrace: stackTrace),
-        );
-      }
+      _logger.e(
+        e.toString(),
+        error: e,
+        stackTrace: stackTrace,
+        time: DateTime.now(),
+      );
+      logout();
+      return left(
+        Failure(message: e.toString(), stackTrace: stackTrace),
+      );
     }
   }
 
@@ -82,10 +91,18 @@ class AuthAPI implements IAuthAPI {
   FutureEitherVoid logout() async {
     try {
       await _account.deleteSession(sessionId: 'current');
-      debugPrint('logged out');
-
+      _logger.i(
+        'Logged out',
+        time: DateTime.now(),
+      );
       return right(null);
     } on AppwriteException catch (e, stackTrace) {
+      _logger.e(
+        e.message,
+        error: e,
+        stackTrace: stackTrace,
+        time: DateTime.now(),
+      );
       return left(
         Failure(
           message: e.message ?? 'Some unexpected error occurred',
@@ -93,7 +110,12 @@ class AuthAPI implements IAuthAPI {
         ),
       );
     } catch (e, stackTrace) {
-      print(e.toString());
+      _logger.e(
+        e.toString(),
+        error: e,
+        stackTrace: stackTrace,
+        time: DateTime.now(),
+      );
       return left(
         Failure(message: e.toString(), stackTrace: stackTrace),
       );
@@ -104,32 +126,22 @@ class AuthAPI implements IAuthAPI {
   Future<User?> currentUserAccount() async {
     try {
       return await _account.get();
-    } on AppwriteException {
-      return null;
-    } catch (e) {
-      return null;
-    }
-  }
-
-  @override
-  FutureEitherVoid resetPrefs() async {
-    try {
-      await _account.updatePrefs(prefs: {'studentNumber': ''});
-      return right(null);
     } on AppwriteException catch (e, stackTrace) {
-      return left(
-        Failure(
-          message: e.message ?? 'Some unexpected error occurred',
-          stackTrace: stackTrace,
-        ),
+      _logger.e(
+        e.message,
+        error: e,
+        stackTrace: stackTrace,
+        time: DateTime.now(),
       );
+      return null;
     } catch (e, stackTrace) {
-      if (e.toString().contains('Expected')) {
-        return right(null);
-      }
-      return left(
-        Failure(message: e.toString(), stackTrace: stackTrace),
+      _logger.e(
+        e.toString(),
+        error: e,
+        stackTrace: stackTrace,
+        time: DateTime.now(),
       );
+      return null;
     }
   }
 }

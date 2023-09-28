@@ -33,7 +33,6 @@ class _AuthPageState extends ConsumerState<AuthView> {
 
   @override
   void initState() {
-    ref.read(authControllerProvider).resetPrefs();
     ref.read(authControllerProvider).logout();
     super.initState();
   }
@@ -56,7 +55,10 @@ class _AuthPageState extends ConsumerState<AuthView> {
               child: Column(
                 mainAxisSize: MainAxisSize.min,
                 children: [
-                  Image.asset('assets/wsu.png'),
+                  Image.asset(
+                    'assets/wsu.png',
+                    height: 60,
+                  ),
                   const Text(
                     'LAPTOP APPLICATIONS',
                     style: TextStyle(

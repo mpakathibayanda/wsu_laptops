@@ -7,28 +7,23 @@ import 'package:wsu_laptops/common/core/providers.dart';
 final studentApiProvider = Provider((ref) {
   return StudentApi(
     db: ref.watch(appwriteDatabaseProvider),
-    account: ref.watch(appwriteAccountProvider),
   );
 });
 
 abstract class IStudentApi {
-  Future<Document> getStudentData();
+  Future<Document> getStudentData({required String studentNumber});
 }
 
 class StudentApi implements IStudentApi {
   final Databases _db;
-  final Account _account;
 
-  StudentApi({required Databases db, required Account account})
-      : _db = db,
-        _account = account;
+  StudentApi({required Databases db}) : _db = db;
   @override
-  Future<Document> getStudentData() async {
-    final prefs = await _account.getPrefs().then((value) => value.data);
+  Future<Document> getStudentData({required String studentNumber}) async {
     return _db.getDocument(
-      databaseId: AppwriteConstants.databaseId,
+      databaseId: AppwriteConstants.studentsDatabaseId,
       collectionId: AppwriteConstants.studentsCollection,
-      documentId: prefs['studentNumber'],
+      documentId: studentNumber,
     );
   }
 }

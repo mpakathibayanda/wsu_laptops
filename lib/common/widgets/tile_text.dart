@@ -4,12 +4,7 @@ class TileTxt extends StatelessWidget {
   final Color? color;
   final String? txt;
   final String? value;
-  const TileTxt({
-    super.key,
-    this.color,
-    this.txt,
-    this.value,
-  });
+  const TileTxt({super.key, this.color, this.txt, this.value});
 
   @override
   Widget build(BuildContext context) {
