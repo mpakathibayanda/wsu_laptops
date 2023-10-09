@@ -82,3 +82,11 @@ void showErrorDialog({
     },
   );
 }
+
+String dateTime(String date) {
+  if (date.length > 3) {
+    date = DateTime.fromMillisecondsSinceEpoch(int.parse(date)).toString();
+    date = date.substring(0, 11);
+  }
+  return date;
+}

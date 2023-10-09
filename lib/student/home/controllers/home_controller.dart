@@ -17,6 +17,11 @@ final getUserDataProvider = FutureProvider.family((ref, String id) async {
       .getUserData(studentNumber: id);
 });
 
+final getLastestStudentData = StreamProvider((ref) {
+  final studentApi = ref.watch(studentApiProvider);
+  return studentApi.getLastestStundentData();
+});
+
 class HomeController extends StateNotifier<bool> {
   HomeController({
     required StudentApi studentApi,

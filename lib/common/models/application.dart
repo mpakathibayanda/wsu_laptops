@@ -4,7 +4,7 @@ import 'dart:convert';
 import 'package:wsu_laptops/common/models/student_model.dart';
 
 class ApplicationModel {
-  final StudentModel student;
+  final StudentModel? student;
   final String brandName;
   final String? serialNumber;
   final String date;
@@ -35,7 +35,7 @@ class ApplicationModel {
 
   Map<String, dynamic> toMap() {
     return <String, dynamic>{
-      'student': student.toMap(),
+      'student': student?.toMap(),
       'brandName': brandName,
       'serialNumber': serialNumber,
       'date': date,
@@ -45,8 +45,8 @@ class ApplicationModel {
 
   Map<String, dynamic> toApp() {
     return <String, dynamic>{
-      'studentNumber': student.studentNumber,
-      'isFunded': student.isFunded,
+      'studentNumber': student!.studentNumber,
+      'isFunded': student!.isFunded,
       'brandName': brandName,
       'serialNumber': serialNumber,
       'status': status,
@@ -56,7 +56,9 @@ class ApplicationModel {
 
   factory ApplicationModel.fromMap(Map<String, dynamic> map) {
     return ApplicationModel(
-      student: StudentModel.fromMap(map['student'] as Map<String, dynamic>),
+      student: map['serialNumber'] != null
+          ? StudentModel.fromMap(map['student'] as Map<String, dynamic>)
+          : null,
       brandName: map['brandName'] as String,
       serialNumber:
           map['serialNumber'] != null ? map['serialNumber'] as String : 'N/A',

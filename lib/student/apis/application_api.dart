@@ -1,5 +1,4 @@
 import 'package:appwrite/appwrite.dart';
-import 'package:appwrite/models.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:fpdart/fpdart.dart';
 import 'package:logger/logger.dart';
@@ -16,7 +15,7 @@ final applicationAPIProvider = Provider((ref) {
 
 abstract class IApplicationAPI {
   FutureEitherVoid submitApplitions({required ApplicationModel application});
-  FutureEither<Document> getApplicationById({required String id});
+  FutureEither<Map<String, dynamic>> getApplicationById({required String id});
 }
 
 class ApplicationAPI implements IApplicationAPI {
@@ -33,13 +32,13 @@ class ApplicationAPI implements IApplicationAPI {
       await _db.createDocument(
         databaseId: AppwriteConstants.applicationsDatabaseId,
         collectionId: AppwriteConstants.applicationCollection,
-        documentId: application.student.studentNumber,
+        documentId: application.student!.studentNumber,
         data: application.toApp(),
       );
       await _db.updateDocument(
           databaseId: AppwriteConstants.studentsDatabaseId,
           collectionId: AppwriteConstants.studentsCollection,
-          documentId: application.student.studentNumber,
+          documentId: application.student!.studentNumber,
           data: {
             'status': 'Submitted',
             'laptopName': application.brandName,
@@ -70,20 +69,32 @@ class ApplicationAPI implements IApplicationAPI {
   }
 
   @override
-  FutureEither<Document> getApplicationById({required String id}) async {
+  FutureEither<Map<String, dynamic>> getApplicationById(
+      {required String id}) async {
     try {
       _logger.f('Requisting Applications info for: $id');
-      final doc = await _db.getDocument(
-        databaseId: '',
-        collectionId: '',
-        documentId: '',
+      final appDoc = await _db.getDocument(
+        databaseId: AppwriteConstants.applicationsDatabaseId,
+        collectionId: AppwriteConstants.applicationCollection,
+        documentId: id,
+      );
+
+      final stundentDoc = await _db.getDocument(
+        databaseId: AppwriteConstants.studentsDatabaseId,
+        collectionId: AppwriteConstants.studentsCollection,
+        documentId: id,
+      );
+      Map<String, dynamic> appInfo = appDoc.data;
+
+      appDoc.data.addAll(
+        {'student': stundentDoc.data},
       );
 
       _logger.i(
-        'Application info : ${doc.data}',
+        'Application info : ${appDoc.data}',
         time: DateTime.now(),
       );
-      return right(doc);
+      return right(appInfo);
     } on AppwriteException catch (e, s) {
       _logger.e(
         e.message,

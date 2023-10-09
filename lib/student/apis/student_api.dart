@@ -7,17 +7,22 @@ import 'package:wsu_laptops/common/core/providers.dart';
 final studentApiProvider = Provider((ref) {
   return StudentApi(
     db: ref.watch(appwriteDatabaseProvider),
+    realtime: ref.watch(appwriteRealtimeProvider),
   );
 });
 
 abstract class IStudentApi {
   Future<Document> getStudentData({required String studentNumber});
+  Stream<RealtimeMessage> getLastestStundentData();
 }
 
 class StudentApi implements IStudentApi {
   final Databases _db;
+  final Realtime _realtime;
 
-  StudentApi({required Databases db}) : _db = db;
+  StudentApi({required Databases db, required Realtime realtime})
+      : _db = db,
+        _realtime = realtime;
   @override
   Future<Document> getStudentData({required String studentNumber}) async {
     return _db.getDocument(
@@ -25,5 +30,12 @@ class StudentApi implements IStudentApi {
       collectionId: AppwriteConstants.studentsCollection,
       documentId: studentNumber,
     );
+  }
+
+  @override
+  Stream<RealtimeMessage> getLastestStundentData() {
+    return _realtime.subscribe([
+      'databases.${AppwriteConstants.studentsDatabaseId}.collections.${AppwriteConstants.studentsCollection}.documents'
+    ]).stream;
   }
 }

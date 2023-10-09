@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:logger/logger.dart';
+import 'package:wsu_laptops/common/core/utils.dart';
 import 'package:wsu_laptops/common/widgets/tile_text.dart';
 import 'package:wsu_laptops/student/applications/controllers/application_ctrl.dart';
 
@@ -63,9 +64,7 @@ class _AppDropdownState extends ConsumerState<AppDropdown> {
                         ),
                         TileTxt(
                           txt: 'Date',
-                          value: DateTime.fromMillisecondsSinceEpoch(
-                                  int.parse(info.date))
-                              .toString(),
+                          value: dateTime(info.date),
                           color: Colors.grey,
                         ),
                       ],
@@ -79,7 +78,7 @@ class _AppDropdownState extends ConsumerState<AppDropdown> {
           }
         }
         if (snapshot.connectionState == ConnectionState.waiting) {
-          return const Text('Loading...');
+          return const Center(child: Text('Loading...'));
         }
         if (snapshot.hasError) {
           logger.e(
@@ -88,7 +87,7 @@ class _AppDropdownState extends ConsumerState<AppDropdown> {
             error: snapshot.error,
           );
         }
-        return Text(snapshot.error.toString());
+        return const SizedBox();
       },
     );
   }

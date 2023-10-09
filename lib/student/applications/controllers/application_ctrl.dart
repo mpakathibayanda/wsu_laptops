@@ -48,7 +48,7 @@ class ApplicationController extends StateNotifier<bool> {
       Navigator.pushReplacement(
         context,
         MaterialPageRoute(
-          builder: (context) => HomeView(application.student.studentNumber),
+          builder: (context) => HomeView(application.student!.studentNumber),
         ),
       );
     });
@@ -59,7 +59,7 @@ class ApplicationController extends StateNotifier<bool> {
     return res.fold((l) {
       return null;
     }, (r) {
-      return ApplicationModel.fromMap(r.data);
+      return ApplicationModel.fromMap(r);
     });
   }
 }
