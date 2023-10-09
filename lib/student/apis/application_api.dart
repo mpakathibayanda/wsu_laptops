@@ -72,7 +72,7 @@ class ApplicationAPI implements IApplicationAPI {
   FutureEither<Map<String, dynamic>> getApplicationById(
       {required String id}) async {
     try {
-      _logger.f('Requisting Applications info for: $id');
+      // _logger.f('Requisting Applications info for: $id');
       final appDoc = await _db.getDocument(
         databaseId: AppwriteConstants.applicationsDatabaseId,
         collectionId: AppwriteConstants.applicationCollection,
@@ -90,10 +90,10 @@ class ApplicationAPI implements IApplicationAPI {
         {'student': stundentDoc.data},
       );
 
-      _logger.i(
-        'Application info : ${appDoc.data}',
-        time: DateTime.now(),
-      );
+      // _logger.i(
+      //   'Application info : ${appDoc.data}',
+      //   time: DateTime.now(),
+      // );
       return right(appInfo);
     } on AppwriteException catch (e, s) {
       _logger.e(
