@@ -1,7 +1,7 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:wsu_laptops/common/models/student_model.dart';
-import 'package:wsu_laptops/student/apis/auth_api.dart';
-import 'package:wsu_laptops/student/apis/student_api.dart';
+import 'package:wsu_laptops/student/auth/api/auth_api.dart';
+import 'package:wsu_laptops/student/home/api/student_api.dart';
 
 final homeControllerProvider =
     StateNotifierProvider<HomeController, bool>((ref) {

@@ -197,18 +197,20 @@ class _AuthPageState extends ConsumerState<AuthView> {
                                 ),
                               ),
                               const SizedBox(height: 20),
-                              ElevatedButton(
-                                onPressed: () {
-                                  _login();
-                                },
-                                child: const Padding(
-                                  padding: EdgeInsets.all(10.0),
-                                  child: Text(
-                                    'Login',
-                                    style: TextStyle(
-                                      color: Colors.white,
-                                      fontWeight: FontWeight.w500,
-                                      fontSize: 16,
+                              Center(
+                                child: ElevatedButton(
+                                  onPressed: () {
+                                    _login();
+                                  },
+                                  child: const Padding(
+                                    padding: EdgeInsets.all(10.0),
+                                    child: Text(
+                                      'Login',
+                                      style: TextStyle(
+                                        color: Colors.white,
+                                        fontWeight: FontWeight.w500,
+                                        fontSize: 16,
+                                      ),
                                     ),
                                   ),
                                 ),

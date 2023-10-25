@@ -17,7 +17,9 @@ class AppBody extends StatelessWidget {
           minWidth: 240,
           maxWidth: 600,
         ),
-        height: MediaQuery.of(context).size.height - 25,
+        height: MediaQuery.of(context).size.width > 450
+            ? MediaQuery.of(context).size.height - 25
+            : MediaQuery.of(context).size.height,
         decoration: BoxDecoration(
           color: color ?? Colors.white,
         ),

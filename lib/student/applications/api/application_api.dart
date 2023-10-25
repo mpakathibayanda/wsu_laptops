@@ -35,35 +35,17 @@ class ApplicationAPI implements IApplicationAPI {
         documentId: application.student!.studentNumber,
         data: application.toApp(),
       );
-      await _db.updateDocument(
-          databaseId: AppwriteConstants.studentsDatabaseId,
-          collectionId: AppwriteConstants.studentsCollection,
-          documentId: application.student!.studentNumber,
-          data: {
-            'status': 'Submitted',
-            'laptopName': application.brandName,
-            'laptopSerialNumber': 'N/A',
-          });
+
       _logger.i(
         'Application submitted',
         time: DateTime.now(),
       );
       return right(null);
     } on AppwriteException catch (e, s) {
-      _logger.e(
-        e.message,
-        error: e,
-        stackTrace: s,
-        time: DateTime.now(),
-      );
+      _logger.e(e.message, error: e, stackTrace: s, time: DateTime.now());
       return left(Failure(stackTrace: s));
     } catch (e, s) {
-      _logger.e(
-        e.toString(),
-        error: e,
-        stackTrace: s,
-        time: DateTime.now(),
-      );
+      _logger.e(e.toString(), error: e, stackTrace: s, time: DateTime.now());
       return left(Failure(stackTrace: s));
     }
   }
@@ -102,14 +84,15 @@ class ApplicationAPI implements IApplicationAPI {
         stackTrace: s,
         time: DateTime.now(),
       );
+      if (e.message != null) {
+        _logger.e(e.message, error: e, stackTrace: s, time: DateTime.now());
+        if (e.message!.contains('not found')) {
+          return right({'not': true});
+        }
+      }
       return left(Failure(stackTrace: s));
     } catch (e, s) {
-      _logger.e(
-        e.toString(),
-        error: e,
-        stackTrace: s,
-        time: DateTime.now(),
-      );
+      _logger.e(e.toString(), error: e, stackTrace: s, time: DateTime.now());
       return left(Failure(stackTrace: s));
     }
   }

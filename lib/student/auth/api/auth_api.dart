@@ -54,36 +54,47 @@ class AuthAPI implements IAuthAPI {
         );
       }
     } on AppwriteException catch (e, stackTrace) {
-      _logger.e(
-        e.message,
-        error: e,
-        stackTrace: stackTrace,
-        time: DateTime.now(),
-      );
       logout();
-      if (e.code == 404) {
+      _logger.e(e.message,
+          error: e, stackTrace: stackTrace, time: DateTime.now());
+      if (e.message != null) {
+        if (e.message!.contains('exceeded')) {
+          return left(
+            Failure(
+              message:
+                  'Too many login attempts, you exceeded daily limit, try again later',
+              stackTrace: stackTrace,
+            ),
+          );
+        } else if (e.message!
+            .contains('Document with the requested ID could not be found')) {
+          return left(
+            Failure(
+              message: 'Invalid credentials',
+              stackTrace: stackTrace,
+            ),
+          );
+        } else {
+          return left(
+            Failure(
+              message: 'Anexpected error, check your internet connection',
+              stackTrace: stackTrace,
+            ),
+          );
+        }
+      } else {
         return left(
-          const Failure(message: 'Invalid credentials'),
+          Failure(
+            message: 'Unknown error accured',
+            stackTrace: stackTrace,
+          ),
         );
       }
-
-      return left(
-        Failure(
-          message: e.message ?? 'Something went wrong?',
-          stackTrace: stackTrace,
-        ),
-      );
     } catch (e, stackTrace) {
-      _logger.e(
-        e.toString(),
-        error: e,
-        stackTrace: stackTrace,
-        time: DateTime.now(),
-      );
+      _logger.e(e.toString(),
+          error: e, stackTrace: stackTrace, time: DateTime.now());
       logout();
-      return left(
-        Failure(message: e.toString(), stackTrace: stackTrace),
-      );
+      return left(Failure(message: e.toString(), stackTrace: stackTrace));
     }
   }
 
@@ -91,18 +102,11 @@ class AuthAPI implements IAuthAPI {
   FutureEitherVoid logout() async {
     try {
       await _account.deleteSession(sessionId: 'current');
-      _logger.i(
-        'Logged out',
-        time: DateTime.now(),
-      );
+      _logger.i('Logged out', time: DateTime.now());
       return right(null);
     } on AppwriteException catch (e, stackTrace) {
-      _logger.e(
-        e.message,
-        error: e,
-        stackTrace: stackTrace,
-        time: DateTime.now(),
-      );
+      _logger.e(e.message,
+          error: e, stackTrace: stackTrace, time: DateTime.now());
       return left(
         Failure(
           message: e.message ?? 'Some unexpected error occurred',
@@ -110,12 +114,8 @@ class AuthAPI implements IAuthAPI {
         ),
       );
     } catch (e, stackTrace) {
-      _logger.e(
-        e.toString(),
-        error: e,
-        stackTrace: stackTrace,
-        time: DateTime.now(),
-      );
+      _logger.e(e.toString(),
+          error: e, stackTrace: stackTrace, time: DateTime.now());
       return left(
         Failure(message: e.toString(), stackTrace: stackTrace),
       );
@@ -127,20 +127,12 @@ class AuthAPI implements IAuthAPI {
     try {
       return await _account.get();
     } on AppwriteException catch (e, stackTrace) {
-      _logger.e(
-        e.message,
-        error: e,
-        stackTrace: stackTrace,
-        time: DateTime.now(),
-      );
+      _logger.e(e.message,
+          error: e, stackTrace: stackTrace, time: DateTime.now());
       return null;
     } catch (e, stackTrace) {
-      _logger.e(
-        e.toString(),
-        error: e,
-        stackTrace: stackTrace,
-        time: DateTime.now(),
-      );
+      _logger.e(e.toString(),
+          error: e, stackTrace: stackTrace, time: DateTime.now());
       return null;
     }
   }

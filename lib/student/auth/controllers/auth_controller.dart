@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:wsu_laptops/common/core/utils.dart';
 import 'package:wsu_laptops/common/models/student_model.dart';
-import 'package:wsu_laptops/student/apis/auth_api.dart';
+import 'package:wsu_laptops/student/auth/api/auth_api.dart';
 import 'package:wsu_laptops/student/home/views/home_view.dart';
 
 final authControllerProvider = Provider<AuthController>((ref) {

@@ -1,14 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:wsu_laptops/common/constants/appwite_consts.dart';
-import 'package:wsu_laptops/common/core/utils.dart';
-import 'package:wsu_laptops/common/models/student_model.dart';
 import 'package:wsu_laptops/common/widgets/app_body.dart';
-import 'package:wsu_laptops/common/widgets/app_dropdown.dart';
+import 'package:wsu_laptops/student/home/views/student_view.dart';
 import 'package:wsu_laptops/common/widgets/error_page.dart';
 import 'package:wsu_laptops/common/widgets/loading_page.dart';
-import 'package:wsu_laptops/common/widgets/tile_text.dart';
-import 'package:wsu_laptops/student/applications/views/app_view.dart';
 import 'package:wsu_laptops/student/auth/view/auth_view.dart';
 import 'package:wsu_laptops/student/home/controllers/home_controller.dart';
 
@@ -30,270 +25,60 @@ class _HomeViewState extends ConsumerState<HomeView> {
     );
   }
 
+  bool isLoad = false;
   @override
   Widget build(BuildContext context) {
     return ref.watch(getUserDataProvider(widget.student)).when(
           data: (student) {
-            return ref.watch(getLastestStudentData).when(
-                  data: (data) {
-                    if (data.events.contains(
-                        'databases.*.collections.${AppwriteConstants.studentsCollection}.documents.*.update')) {
-                      student = StudentModel.fromMap(data.payload);
-                    }
-                    return Scaffold(
-                      body: SafeArea(
-                        child: AppBody(
-                          child: Padding(
-                            padding: const EdgeInsets.symmetric(horizontal: 20),
-                            child: SingleChildScrollView(
-                              child: Column(
-                                mainAxisSize: MainAxisSize.min,
-                                crossAxisAlignment: CrossAxisAlignment.stretch,
-                                children: [
-                                  Image.asset(
-                                    'assets/wsu.png',
-                                    width: MediaQuery.of(context).size.width,
-                                    height: 60,
-                                  ),
-                                  const Center(
-                                    child: Text(
-                                      ' WSU LAPTOP APPLICATIONS',
-                                      style: TextStyle(
-                                        fontWeight: FontWeight.bold,
-                                        fontSize: 22,
-                                      ),
-                                    ),
-                                  ),
-                                  Card(
-                                    elevation: 100,
-                                    child: SingleChildScrollView(
-                                      child: Column(
-                                        mainAxisSize: MainAxisSize.min,
-                                        crossAxisAlignment:
-                                            CrossAxisAlignment.stretch,
-                                        children: [
-                                          Container(
-                                            padding: const EdgeInsets.all(10),
-                                            decoration: BoxDecoration(
-                                              border: Border.all(
-                                                color: Colors.grey,
-                                              ),
-                                            ),
-                                            child: Text(
-                                              '${student.name}, ${student.surname}',
-                                              style: const TextStyle(
-                                                fontWeight: FontWeight.w600,
-                                              ),
-                                            ),
-                                          ),
-                                          TileTxt(
-                                            txt: 'Gender',
-                                            value: student.gender,
-                                            color: Colors.grey,
-                                          ),
-                                          TileTxt(
-                                            txt: 'Student number',
-                                            value: student.studentNumber,
-                                          ),
-                                          TileTxt(
-                                            txt: 'Department',
-                                            value: student.department,
-                                            color: Colors.grey,
-                                          ),
-                                          TileTxt(
-                                            txt: 'Course',
-                                            value: student.course,
-                                          ),
-                                          TileTxt(
-                                            txt: 'Funded',
-                                            value: student.isFunded,
-                                            color: Colors.grey,
-                                          ),
-                                          TileTxt(
-                                            txt: 'Status',
-                                            value: student.status,
-                                          ),
-                                          TileTxt(
-                                            txt: 'Collection date',
-                                            value: dateTime(
-                                                student.collectionDate),
-                                            color: Colors.grey,
-                                          ),
-                                          Visibility(
-                                            visible:
-                                                student.status != 'Not Applied',
-                                            child: Builder(builder: (context) {
-                                              return AppDropdown(
-                                                student.studentNumber,
-                                              );
-                                            }),
-                                          )
-                                        ],
-                                      ),
-                                    ),
-                                  ),
-                                  const SizedBox(height: 50),
-                                  Visibility(
-                                    visible: student.status == 'Not Applied',
-                                    child: ElevatedButton(
-                                      onPressed: () {
-                                        Navigator.pushReplacement(
-                                          context,
-                                          MaterialPageRoute(
-                                            builder: (context) =>
-                                                Application(student),
-                                          ),
-                                        );
-                                      },
-                                      child: const Text('APPLY NOW'),
-                                    ),
-                                  ),
-                                  const SizedBox(height: 20),
-                                  OutlinedButton(
-                                    onPressed: _logout,
-                                    child: const Text('LOGOUT'),
-                                  ),
-                                  const SizedBox(height: 20),
-                                ],
+            setState(() {
+              isLoad = false;
+            });
+            return Scaffold(
+              appBar: AppBar(
+                title: const Text('WSU LAPTOP APPLICATIONS'),
+              ),
+              body: SafeArea(
+                child: AppBody(
+                  child: Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 20),
+                    child: SingleChildScrollView(
+                      child: Column(
+                        mainAxisSize: MainAxisSize.min,
+                        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                        crossAxisAlignment: CrossAxisAlignment.stretch,
+                        children: [
+                          Padding(
+                            padding: const EdgeInsets.symmetric(vertical: 25),
+                            child: StudentView(student),
+                          ),
+                          Visibility(
+                            visible: !isLoad,
+                            child: OutlinedButton(
+                              style: ElevatedButton.styleFrom(
+                                padding: const EdgeInsets.symmetric(
+                                  horizontal: 12,
+                                  vertical: 20,
+                                ),
                               ),
+                              onPressed: _logout,
+                              child: const Text('Logout'),
                             ),
                           ),
-                        ),
+                        ],
                       ),
-                    );
-                  },
-                  error: (error, stackTrac) => ErrorPage(
-                    error: error.toString(),
+                    ),
                   ),
-                  loading: () {
-                    return Scaffold(
-                      body: SafeArea(
-                        child: AppBody(
-                          child: Padding(
-                            padding: const EdgeInsets.symmetric(horizontal: 20),
-                            child: SingleChildScrollView(
-                              child: Column(
-                                mainAxisSize: MainAxisSize.min,
-                                crossAxisAlignment: CrossAxisAlignment.stretch,
-                                children: [
-                                  Image.asset(
-                                    'assets/wsu.png',
-                                    width: MediaQuery.of(context).size.width,
-                                    height: 60,
-                                  ),
-                                  const Center(
-                                    child: Text(
-                                      ' WSU LAPTOP APPLICATIONS',
-                                      style: TextStyle(
-                                        fontWeight: FontWeight.bold,
-                                        fontSize: 22,
-                                      ),
-                                    ),
-                                  ),
-                                  Card(
-                                    elevation: 100,
-                                    child: SingleChildScrollView(
-                                      child: Column(
-                                        mainAxisSize: MainAxisSize.min,
-                                        crossAxisAlignment:
-                                            CrossAxisAlignment.stretch,
-                                        children: [
-                                          Container(
-                                            padding: const EdgeInsets.all(10),
-                                            decoration: BoxDecoration(
-                                              border: Border.all(
-                                                color: Colors.grey,
-                                              ),
-                                            ),
-                                            child: Text(
-                                              '${student.name}, ${student.surname}',
-                                              style: const TextStyle(
-                                                fontWeight: FontWeight.w600,
-                                              ),
-                                            ),
-                                          ),
-                                          TileTxt(
-                                            txt: 'Gender',
-                                            value: student.gender,
-                                            color: Colors.grey,
-                                          ),
-                                          TileTxt(
-                                            txt: 'Student number',
-                                            value: student.studentNumber,
-                                          ),
-                                          TileTxt(
-                                            txt: 'Department',
-                                            value: student.department,
-                                            color: Colors.grey,
-                                          ),
-                                          TileTxt(
-                                            txt: 'Course',
-                                            value: student.course,
-                                          ),
-                                          TileTxt(
-                                            txt: 'Funded',
-                                            value: student.isFunded,
-                                            color: Colors.grey,
-                                          ),
-                                          TileTxt(
-                                            txt: 'Status',
-                                            value: student.status,
-                                          ),
-                                          TileTxt(
-                                            txt: 'Collection date',
-                                            value: dateTime(
-                                                student.collectionDate),
-                                            color: Colors.grey,
-                                          ),
-                                          Visibility(
-                                            visible:
-                                                student.status != 'Not Applied',
-                                            child: Builder(builder: (context) {
-                                              return AppDropdown(
-                                                student.studentNumber,
-                                              );
-                                            }),
-                                          )
-                                        ],
-                                      ),
-                                    ),
-                                  ),
-                                  const SizedBox(height: 50),
-                                  Visibility(
-                                    visible: student.status == 'Not Applied',
-                                    child: ElevatedButton(
-                                      onPressed: () {
-                                        Navigator.pushReplacement(
-                                          context,
-                                          MaterialPageRoute(
-                                            builder: (context) =>
-                                                Application(student),
-                                          ),
-                                        );
-                                      },
-                                      child: const Text('APPLY NOW'),
-                                    ),
-                                  ),
-                                  const SizedBox(height: 20),
-                                  OutlinedButton(
-                                    onPressed: _logout,
-                                    child: const Text('LOGOUT'),
-                                  ),
-                                  const SizedBox(height: 20),
-                                ],
-                              ),
-                            ),
-                          ),
-                        ),
-                      ),
-                    );
-                  },
-                );
+                ),
+              ),
+            );
           },
           error: (error, stackTrac) => ErrorPage(
             error: error.toString(),
           ),
           loading: () {
+            setState(() {
+              isLoad = true;
+            });
             return const LoadingPage();
           },
         );

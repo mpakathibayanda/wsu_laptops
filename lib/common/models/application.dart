@@ -1,45 +1,54 @@
-// ignore_for_file: public_member_api_docs, sort_constructors_first
 import 'dart:convert';
 
 import 'package:wsu_laptops/common/models/student_model.dart';
 
 class ApplicationModel {
   final StudentModel? student;
+  final String isFunded;
   final String brandName;
   final String? serialNumber;
   final String date;
   final String? status;
+  final String? collectionDate;
   ApplicationModel({
     required this.student,
+    required this.isFunded,
     required this.brandName,
     this.serialNumber,
     required this.date,
     this.status,
+    this.collectionDate,
   });
 
   ApplicationModel copyWith({
     StudentModel? student,
+    String? isFunded,
     String? brandName,
     String? serialNumber,
     String? date,
     String? status,
+    String? collectionDate,
   }) {
     return ApplicationModel(
       student: student ?? this.student,
+      isFunded: isFunded ?? this.isFunded,
       brandName: brandName ?? this.brandName,
       serialNumber: serialNumber ?? this.serialNumber,
       date: date ?? this.date,
       status: status ?? this.status,
+      collectionDate: collectionDate ?? this.collectionDate,
     );
   }
 
   Map<String, dynamic> toMap() {
     return <String, dynamic>{
       'student': student?.toMap(),
+      'isFunded': isFunded,
       'brandName': brandName,
       'serialNumber': serialNumber,
       'date': date,
       'status': status,
+      'collectionDate': collectionDate,
     };
   }
 
@@ -51,6 +60,7 @@ class ApplicationModel {
       'serialNumber': serialNumber,
       'status': status,
       'date': date,
+      'collectionDate': collectionDate,
     };
   }
 
@@ -59,11 +69,15 @@ class ApplicationModel {
       student: map['serialNumber'] != null
           ? StudentModel.fromMap(map['student'] as Map<String, dynamic>)
           : null,
+      isFunded: map['isFunded'],
       brandName: map['brandName'] as String,
       serialNumber:
           map['serialNumber'] != null ? map['serialNumber'] as String : 'N/A',
       date: map['date'] as String,
       status: map['status'] != null ? map['status'] as String : null,
+      collectionDate: map['collectionDate'] != null
+          ? map['collectionDate'] as String
+          : null,
     );
   }
 
@@ -74,7 +88,7 @@ class ApplicationModel {
 
   @override
   String toString() {
-    return 'ApplicationModel(student: $student, brandName: $brandName, serialNumber: $serialNumber, date: $date, status: $status)';
+    return 'ApplicationModel(student: $student, brandName: $brandName, serialNumber: $serialNumber, date: $date, status: $status, collectionDate: $collectionDate, isFunded: $isFunded)';
   }
 
   @override
@@ -83,17 +97,21 @@ class ApplicationModel {
 
     return other.student == student &&
         other.brandName == brandName &&
+        other.isFunded == isFunded &&
         other.serialNumber == serialNumber &&
         other.date == date &&
-        other.status == status;
+        other.status == status &&
+        other.collectionDate == collectionDate;
   }
 
   @override
   int get hashCode {
     return student.hashCode ^
         brandName.hashCode ^
+        isFunded.hashCode ^
         serialNumber.hashCode ^
         date.hashCode ^
-        status.hashCode;
+        status.hashCode ^
+        collectionDate.hashCode;
   }
 }

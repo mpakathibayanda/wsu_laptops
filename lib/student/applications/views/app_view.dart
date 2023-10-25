@@ -7,25 +7,37 @@ import 'package:wsu_laptops/common/widgets/app_body.dart';
 import 'package:wsu_laptops/common/widgets/tile_text.dart';
 import 'package:wsu_laptops/student/applications/controllers/application_ctrl.dart';
 import 'package:wsu_laptops/student/home/views/home_view.dart';
+import 'package:wsu_laptops/student/home/views/not_applied_view.dart';
 
-class Application extends ConsumerStatefulWidget {
+class StudentApplication extends ConsumerStatefulWidget {
   final StudentModel student;
-  const Application(this.student, {super.key});
+  final List<String> items;
+  const StudentApplication(this.student, this.items, {super.key});
 
   @override
   ConsumerState<ConsumerStatefulWidget> createState() => _ApplicationState();
 }
 
-class _ApplicationState extends ConsumerState<Application> {
+class _ApplicationState extends ConsumerState<StudentApplication> {
   bool cancel = false;
   String dropdownvalue = 'SELECT BRAND';
-  var items = ['SELECT BRAND', 'LENOVO', 'ASUS', 'HP', 'ACER'];
 
   void _onSubmit({required ApplicationModel application}) {
     ref.watch(applicationControllerProvider.notifier).submitApp(
           context: context,
           application: application,
         );
+  }
+
+  void _onCancel(bool isCanceling) {
+    cancel = true;
+    if (isCanceling) {
+      Navigator.of(context).pushReplacement(
+        MaterialPageRoute(
+          builder: (context) => NotAppliedView(student: widget.student),
+        ),
+      );
+    }
   }
 
   @override
@@ -39,15 +51,11 @@ class _ApplicationState extends ConsumerState<Application> {
               title: const Text('You want to cancel this application?'),
               actions: [
                 OutlinedButton(
-                  onPressed: () {
-                    cancel = true;
-                  },
+                  onPressed: () => _onCancel(true),
                   child: const Text('YES'),
                 ),
                 ElevatedButton(
-                  onPressed: () {
-                    cancel = false;
-                  },
+                  onPressed: () => _onCancel(false),
                   child: const Text('NO'),
                 )
               ],
@@ -109,10 +117,10 @@ class _ApplicationState extends ConsumerState<Application> {
                     ),
                     const Center(
                       child: Text(
-                        ' WSU LAPTOP APPLICATIONS',
+                        'LAPTOP APPLICATIONS FORM',
                         style: TextStyle(
                           fontWeight: FontWeight.bold,
-                          fontSize: 22,
+                          fontSize: 16,
                         ),
                       ),
                     ),
@@ -132,8 +140,8 @@ class _ApplicationState extends ConsumerState<Application> {
                       color: Colors.grey,
                     ),
                     TileTxt(
-                      txt: 'Course: ',
-                      value: widget.student.course,
+                      txt: 'Qualification: ',
+                      value: widget.student.qualification,
                       color: Colors.grey,
                     ),
                     Container(
@@ -157,14 +165,15 @@ class _ApplicationState extends ConsumerState<Application> {
                           Expanded(
                             child: DropdownButton(
                               value: dropdownvalue,
-                              items: items
+                              dropdownColor: Colors.blueAccent,
+                              items: widget.items
                                   .map(
                                     (e) => DropdownMenuItem(
                                       value: e,
                                       child: Text(
                                         e,
                                         style: TextStyle(
-                                          color: dropdownvalue == 'SELECT BRAND'
+                                          color: e == 'SELECT BRAND'
                                               ? Colors.red
                                               : null,
                                         ),
@@ -192,6 +201,8 @@ class _ApplicationState extends ConsumerState<Application> {
                             ApplicationModel application = ApplicationModel(
                               student: widget.student,
                               brandName: dropdownvalue,
+                              isFunded: widget.student.isFunded,
+                              status: 'Submitted',
                               date: DateTime.now()
                                   .millisecondsSinceEpoch
                                   .toString(),

@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:wsu_laptops/common/core/utils.dart';
 import 'package:wsu_laptops/common/models/application.dart';
-import 'package:wsu_laptops/student/apis/application_api.dart';
+import 'package:wsu_laptops/student/applications/api/application_api.dart';
 import 'package:wsu_laptops/student/home/views/home_view.dart';
 
 final applicationControllerProvider =
@@ -59,7 +59,11 @@ class ApplicationController extends StateNotifier<bool> {
     return res.fold((l) {
       return null;
     }, (r) {
-      return ApplicationModel.fromMap(r);
+      if (r.containsKey('not')) {
+        return null;
+      } else {
+        return ApplicationModel.fromMap(r);
+      }
     });
   }
 }
