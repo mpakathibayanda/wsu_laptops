@@ -8,6 +8,8 @@ class AppSearchDelegate extends SearchDelegate {
 
   AppSearchDelegate(this.ref);
   @override
+  String? get searchFieldLabel => 'Student number';
+  @override
   List<Widget>? buildActions(BuildContext context) {
     return [
       IconButton(
@@ -31,13 +33,20 @@ class AppSearchDelegate extends SearchDelegate {
 
   @override
   Widget buildSuggestions(BuildContext context) {
-    final apps = ref.watch(searchApplicationsProvider(query));
-    return ListView.builder(
-      itemCount: apps.length,
-      itemBuilder: (context, index) {
-        final app = apps[index];
-        return ApplicationItem(application: app);
-      },
-    );
+    return ref.watch(searchApplicationsProvider(query)).when(
+          data: (apps) {
+            return ListView.builder(
+              itemCount: apps.length,
+              itemBuilder: (context, index) {
+                final app = apps[index];
+                return ApplicationItem(application: app);
+              },
+            );
+          },
+          error: (error, stackTrace) {
+            return const Text('Something went wrong');
+          },
+          loading: () => const SizedBox(),
+        );
   }
 }

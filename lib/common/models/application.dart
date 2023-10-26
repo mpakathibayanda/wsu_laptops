@@ -4,6 +4,7 @@ import 'package:wsu_laptops/common/models/student_model.dart';
 
 class ApplicationModel {
   final StudentModel? student;
+  final String? studentNumber;
   final String isFunded;
   final String brandName;
   final String? serialNumber;
@@ -12,6 +13,7 @@ class ApplicationModel {
   final String? collectionDate;
   ApplicationModel({
     required this.student,
+    this.studentNumber,
     required this.isFunded,
     required this.brandName,
     this.serialNumber,
@@ -22,6 +24,7 @@ class ApplicationModel {
 
   ApplicationModel copyWith({
     StudentModel? student,
+    String? studentNumber,
     String? isFunded,
     String? brandName,
     String? serialNumber,
@@ -31,6 +34,7 @@ class ApplicationModel {
   }) {
     return ApplicationModel(
       student: student ?? this.student,
+      studentNumber: studentNumber ?? this.studentNumber,
       isFunded: isFunded ?? this.isFunded,
       brandName: brandName ?? this.brandName,
       serialNumber: serialNumber ?? this.serialNumber,
@@ -43,6 +47,7 @@ class ApplicationModel {
   Map<String, dynamic> toMap() {
     return <String, dynamic>{
       'student': student?.toMap(),
+      'studentNumber': studentNumber,
       'isFunded': isFunded,
       'brandName': brandName,
       'serialNumber': serialNumber,
@@ -64,11 +69,25 @@ class ApplicationModel {
     };
   }
 
+  Map<String, dynamic> fromApp() {
+    return <String, dynamic>{
+      'studentNumber': studentNumber,
+      'isFunded': student!.isFunded,
+      'brandName': brandName,
+      'serialNumber': serialNumber,
+      'status': status,
+      'date': date,
+      'collectionDate': collectionDate,
+    };
+  }
+
   factory ApplicationModel.fromMap(Map<String, dynamic> map) {
     return ApplicationModel(
-      student: map['serialNumber'] != null
+      student: map['student'] != null
           ? StudentModel.fromMap(map['student'] as Map<String, dynamic>)
           : null,
+      studentNumber:
+          map['studentNumber'] != null ? map['studentNumber'] as String : null,
       isFunded: map['isFunded'],
       brandName: map['brandName'] as String,
       serialNumber:
@@ -88,7 +107,7 @@ class ApplicationModel {
 
   @override
   String toString() {
-    return 'ApplicationModel(student: $student, brandName: $brandName, serialNumber: $serialNumber, date: $date, status: $status, collectionDate: $collectionDate, isFunded: $isFunded)';
+    return 'ApplicationModel(student: $student, studentNumber $studentNumber, brandName: $brandName, serialNumber: $serialNumber, date: $date, status: $status, collectionDate: $collectionDate, isFunded: $isFunded)';
   }
 
   @override
@@ -96,6 +115,7 @@ class ApplicationModel {
     if (identical(this, other)) return true;
 
     return other.student == student &&
+        other.studentNumber == studentNumber &&
         other.brandName == brandName &&
         other.isFunded == isFunded &&
         other.serialNumber == serialNumber &&
@@ -107,6 +127,7 @@ class ApplicationModel {
   @override
   int get hashCode {
     return student.hashCode ^
+        studentNumber.hashCode ^
         brandName.hashCode ^
         isFunded.hashCode ^
         serialNumber.hashCode ^

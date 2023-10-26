@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:wsu_laptops/admin/auth/views/admin_auth_view.dart';
+import 'package:wsu_laptops/student/auth/view/auth_view.dart';
 
 void main() {
   runApp(
@@ -33,7 +33,7 @@ class MyApp extends ConsumerWidget {
           ),
         ),
       ),
-      home: const AdminAuthView(),
+      home: const AuthView(),
     );
   }
 }
