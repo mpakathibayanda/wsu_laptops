@@ -16,6 +16,7 @@ class LaptopsView extends ConsumerStatefulWidget {
 
 class _LaptopsViewState extends ConsumerState<LaptopsView> {
   void onApplyNow(BuildContext context, List<String> items) {
+    Navigator.of(context).canPop();
     Navigator.of(context).pushReplacement(
       MaterialPageRoute(
         builder: (context) => StudentApplication(widget.student, items),

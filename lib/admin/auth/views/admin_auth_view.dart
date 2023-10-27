@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:wsu_laptops/admin/home/views/admin_home_view.dart';
+import 'package:wsu_laptops/admin/auth/controllers/admin_auth_ctrl.dart';
+import 'package:wsu_laptops/common/core/utils.dart';
 import 'package:wsu_laptops/common/widgets/app_body.dart';
-import 'package:wsu_laptops/student/auth/controllers/auth_controller.dart';
 
 class AdminAuthView extends ConsumerStatefulWidget {
   const AdminAuthView({super.key});
@@ -16,19 +16,25 @@ class _AuthPageState extends ConsumerState<AdminAuthView> {
   final pinTxtCtrl = TextEditingController();
 
   void _login() {
-    Navigator.pushReplacement(
-      context,
-      MaterialPageRoute(
-        builder: (context) => AdminHomeView(
-          staffNumber: staffNumberTxtCtrl.text,
-        ),
-      ),
-    );
+    if (staffNumberTxtCtrl.text.length == 6 && pinTxtCtrl.text.length == 5) {
+      final authCtrl = ref.read(adminAuthControllerProvider);
+
+      authCtrl.login(
+        staffNumber: staffNumberTxtCtrl.text,
+        pin: pinTxtCtrl.text,
+        context: context,
+      );
+    } else {
+      showErrorDialog(
+        context: context,
+        error: 'Incorrect staff number or pin',
+      );
+    }
   }
 
   @override
   void initState() {
-    ref.read(authControllerProvider).logout();
+    ref.read(adminAuthControllerProvider).logout();
     staffNumberTxtCtrl.clear();
     pinTxtCtrl.clear();
     super.initState();

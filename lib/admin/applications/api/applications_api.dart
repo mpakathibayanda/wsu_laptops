@@ -22,6 +22,7 @@ abstract class IAdminApplicationsApi {
       {required String studentNumber});
   Stream<RealtimeMessage> getLatestApplications();
   FutureEitherVoid responding({required ApplicationModel application});
+  FutureEitherVoid collecting({required ApplicationModel application});
 }
 
 class AdminApplicationsApi extends IAdminApplicationsApi {
@@ -121,6 +122,27 @@ class AdminApplicationsApi extends IAdminApplicationsApi {
     } catch (e, s) {
       _logger.e(e.toString(), error: e, stackTrace: s, time: DateTime.now());
       return left(Failure(error: e, stackTrace: s));
+    }
+  }
+
+  @override
+  FutureEitherVoid collecting({required ApplicationModel application}) async {
+    try {
+      await _db.updateDocument(
+        databaseId: AppwriteConstants.applicationsDatabaseId,
+        collectionId: AppwriteConstants.applicationCollection,
+        documentId: application.student!.studentNumber,
+        data: application.toApp(),
+      );
+      return right(null);
+    } on AppwriteException catch (e, s) {
+      return left(
+        Failure(message: e.message, error: e, stackTrace: s),
+      );
+    } catch (e, s) {
+      return left(
+        Failure(message: 'Unkown error accurred', error: e, stackTrace: s),
+      );
     }
   }
 }

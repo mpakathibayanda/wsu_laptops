@@ -2,7 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:intl/intl.dart';
 import 'package:logger/logger.dart';
-import 'package:wsu_laptops/admin/applications/controller/applications_controller.dart';
+import 'package:wsu_laptops/admin/applications/controller/admin_applications_controller.dart';
+import 'package:wsu_laptops/admin/applications/views/collecting_view.dart';
+import 'package:wsu_laptops/admin/widgets/item.dart';
 import 'package:wsu_laptops/common/constants/appwite_consts.dart';
 import 'package:wsu_laptops/common/core/utils.dart';
 import 'package:wsu_laptops/common/models/application.dart';
@@ -93,8 +95,6 @@ class _ApplicationViewState extends ConsumerState<ApplicationView> {
                           application: application,
                           context: context,
                         );
-                    Navigator.of(context).pop();
-                    collectionDateTxtCtrl.text = 'Pending';
                   } else {
                     ScaffoldMessenger.of(context).showSnackBar(
                       const SnackBar(
@@ -163,11 +163,9 @@ class _ApplicationViewState extends ConsumerState<ApplicationView> {
                         application: application,
                         context: context,
                       );
-                  Navigator.of(context).pop();
-                  reseasonDateTxtCtrl.clear();
                 },
                 child: const Text(
-                  'Done',
+                  'YES',
                   style: TextStyle(
                     fontWeight: FontWeight.bold,
                     color: Colors.black,
@@ -299,7 +297,8 @@ class _ApplicationViewState extends ConsumerState<ApplicationView> {
                                                   onPressed: () {
                                                     Navigator.of(context).pop();
                                                     showAcceptDialog(
-                                                        application);
+                                                      application,
+                                                    );
                                                   },
                                                   child: const Text(
                                                     'Accept',
@@ -322,7 +321,8 @@ class _ApplicationViewState extends ConsumerState<ApplicationView> {
                                                   onPressed: () {
                                                     Navigator.of(context).pop();
                                                     showRejectDialog(
-                                                        application);
+                                                      application,
+                                                    );
                                                   },
                                                   child: const Text(
                                                     'Reject',
@@ -367,7 +367,32 @@ class _ApplicationViewState extends ConsumerState<ApplicationView> {
                                       ),
                                     ),
                                   )
-                                : const SizedBox(),
+                                : application.status == 'Accepted'
+                                    ? OutlinedButton(
+                                        style: ElevatedButton.styleFrom(
+                                          side: const BorderSide(
+                                              color: Colors.black),
+                                          padding: const EdgeInsets.all(15),
+                                        ),
+                                        onPressed: () {
+                                          Navigator.of(context).push(
+                                            MaterialPageRoute(
+                                              builder: (context) {
+                                                return CollectingView(
+                                                    application);
+                                              },
+                                            ),
+                                          );
+                                        },
+                                        child: const Text(
+                                          'Collecting',
+                                          style: TextStyle(
+                                            fontWeight: FontWeight.bold,
+                                            color: Colors.black,
+                                          ),
+                                        ),
+                                      )
+                                    : const SizedBox(),
                             const SizedBox(height: 10),
                           ],
                         ),
@@ -527,7 +552,32 @@ class _ApplicationViewState extends ConsumerState<ApplicationView> {
                                       ),
                                     ),
                                   )
-                                : const SizedBox(),
+                                : application.status == 'Accepted'
+                                    ? OutlinedButton(
+                                        style: ElevatedButton.styleFrom(
+                                          side: const BorderSide(
+                                              color: Colors.black),
+                                          padding: const EdgeInsets.all(15),
+                                        ),
+                                        onPressed: () {
+                                          Navigator.of(context).push(
+                                            MaterialPageRoute(
+                                              builder: (context) {
+                                                return CollectingView(
+                                                    application);
+                                              },
+                                            ),
+                                          );
+                                        },
+                                        child: const Text(
+                                          'Collecting',
+                                          style: TextStyle(
+                                            fontWeight: FontWeight.bold,
+                                            color: Colors.black,
+                                          ),
+                                        ),
+                                      )
+                                    : const SizedBox(),
                             const SizedBox(height: 10),
                           ],
                         ),
@@ -537,150 +587,6 @@ class _ApplicationViewState extends ConsumerState<ApplicationView> {
                 );
               },
             );
-            /*
-            final student = application.student!;
-            return Scaffold(
-              appBar: AppBar(
-                title: Text(
-                  '${student.studentNumber}\'s application',
-                  style: const TextStyle(
-                    fontSize: 20,
-                    fontWeight: FontWeight.bold,
-                  ),
-                ),
-              ),
-              body: AppBody(
-                child: SingleChildScrollView(
-                  child: Container(
-                    color: Colors.blueGrey,
-                    child: Column(
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-                        ItemView(
-                          label: 'Name',
-                          data: student.name,
-                        ),
-                        ItemView(
-                          label: 'Surname',
-                          data: student.surname,
-                        ),
-                        ItemView(
-                          label: 'Funded',
-                          data: student.isFunded,
-                        ),
-                        ItemView(
-                          label: 'Status',
-                          data: application.status!,
-                        ),
-                        ItemView(
-                          label: 'Brand',
-                          data: application.brandName,
-                        ),
-                        application.status != 'Rejected'
-                            ? ItemView(
-                                label: 'Serial number',
-                                data: application.serialNumber ?? 'N/A',
-                              )
-                            : const SizedBox(),
-                        application.status != 'Rejected'
-                            ? ItemView(
-                                label: 'Collection date',
-                                data: dateTime(
-                                    application.collectionDate ?? 'Panding'),
-                              )
-                            : const SizedBox(),
-                        const SizedBox(height: 15),
-                        application.status == 'Submitted'
-                            ? OutlinedButton(
-                                style: ElevatedButton.styleFrom(
-                                  side: const BorderSide(color: Colors.black),
-                                  padding: const EdgeInsets.all(15),
-                                ),
-                                onPressed: () {
-                                  showDialog(
-                                    context: context,
-                                    barrierDismissible: false,
-                                    builder: (context) {
-                                      return SimpleDialog(
-                                        title: const Text('Changing Status'),
-                                        backgroundColor: Colors.blueGrey,
-                                        children: [
-                                          SimpleDialogOption(
-                                            child: ElevatedButton(
-                                              onPressed: () {
-                                                Navigator.of(context).pop();
-                                                showAcceptDialog(application);
-                                              },
-                                              child: const Text(
-                                                'Accept',
-                                                style: TextStyle(
-                                                  fontWeight: FontWeight.bold,
-                                                  color: Colors.black,
-                                                ),
-                                              ),
-                                            ),
-                                          ),
-                                          SimpleDialogOption(
-                                            child: ElevatedButton(
-                                              style: ElevatedButton.styleFrom(
-                                                side: const BorderSide(
-                                                    color: Colors.black),
-                                                backgroundColor: Colors.red,
-                                              ),
-                                              onPressed: () {
-                                                Navigator.of(context).pop();
-                                                showRejectDialog(application);
-                                              },
-                                              child: const Text(
-                                                'Reject',
-                                                style: TextStyle(
-                                                  fontWeight: FontWeight.bold,
-                                                  color: Colors.black,
-                                                ),
-                                              ),
-                                            ),
-                                          ),
-                                          SimpleDialogOption(
-                                            child: OutlinedButton(
-                                              style: ElevatedButton.styleFrom(
-                                                side: const BorderSide(
-                                                    color: Colors.black),
-                                              ),
-                                              onPressed: () {
-                                                Navigator.of(context).pop();
-                                              },
-                                              child: const Text(
-                                                'Cancel',
-                                                style: TextStyle(
-                                                  fontWeight: FontWeight.bold,
-                                                  color: Colors.black,
-                                                ),
-                                              ),
-                                            ),
-                                          ),
-                                        ],
-                                      );
-                                    },
-                                  );
-                                },
-                                child: const Text(
-                                  'Change Status',
-                                  style: TextStyle(
-                                    fontWeight: FontWeight.bold,
-                                    color: Colors.black,
-                                  ),
-                                ),
-                              )
-                            : const SizedBox(),
-                        const SizedBox(height: 10),
-                      ],
-                    ),
-                  ),
-                ),
-              ),
-            );
-          
-          */
           },
           error: (error, stackTrace) {
             final Logger logger = Logger();
@@ -693,50 +599,5 @@ class _ApplicationViewState extends ConsumerState<ApplicationView> {
           },
           loading: () => const LoadingPage(),
         );
-  }
-}
-
-class ItemView extends StatelessWidget {
-  const ItemView({
-    super.key,
-    required this.label,
-    required this.data,
-  });
-
-  final String label;
-  final String data;
-
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      padding: const EdgeInsets.all(10),
-      margin: const EdgeInsets.all(10),
-      decoration: BoxDecoration(
-        border: Border.all(
-          color: Colors.grey,
-        ),
-      ),
-      child: Row(
-        children: [
-          Expanded(
-            child: Text(
-              label,
-              style: const TextStyle(
-                fontWeight: FontWeight.bold,
-              ),
-            ),
-          ),
-          Expanded(
-            child: Text(
-              data,
-              style: const TextStyle(
-                fontWeight: FontWeight.bold,
-              ),
-              overflow: TextOverflow.ellipsis,
-            ),
-          ),
-        ],
-      ),
-    );
   }
 }

@@ -1,35 +1,35 @@
 import 'package:appwrite/models.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:wsu_laptops/admin/auth/api/admin_auth_api.dart';
+import 'package:wsu_laptops/admin/home/views/admin_home_view.dart';
 import 'package:wsu_laptops/common/core/utils.dart';
-import 'package:wsu_laptops/common/models/student_model.dart';
-import 'package:wsu_laptops/student/auth/api/auth_api.dart';
-import 'package:wsu_laptops/student/home/views/home_view.dart';
+import 'package:wsu_laptops/common/models/admin_model.dart';
 
-final authControllerProvider = Provider<AuthController>((ref) {
-  return AuthController(
-    authAPI: ref.watch(authAPIProvider),
+final adminAuthControllerProvider = Provider<AdminAuthController>((ref) {
+  return AdminAuthController(
+    authAPI: ref.watch(admniAuthAPIProvider),
   );
 });
 
 final currentUserAccountProvider = FutureProvider((ref) {
-  final authController = ref.watch(authControllerProvider);
-  return authController.currentUser();
+  final adminAuthController = ref.watch(adminAuthControllerProvider);
+  return adminAuthController.currentUser();
 });
 
-class AuthController extends StateNotifier<bool> {
-  final AuthAPI _authAPI;
-  AuthController({required AuthAPI authAPI})
+class AdminAuthController extends StateNotifier<bool> {
+  final AdmniAuthAPI _authAPI;
+  AdminAuthController({required AdmniAuthAPI authAPI})
       : _authAPI = authAPI,
         super(false);
   Future<User?> currentUser() => _authAPI.currentUserAccount();
   void login({
-    required String studentNumber,
+    required String staffNumber,
     required String pin,
     required BuildContext context,
   }) async {
     showLoadingDialog(context: context, title: 'Login...');
-    final res = await _authAPI.login(studentNumber: studentNumber, pin: pin);
+    final res = await _authAPI.login(staffNumber: staffNumber, pin: pin);
 
     res.fold(
       (l) {
@@ -37,13 +37,12 @@ class AuthController extends StateNotifier<bool> {
         showErrorDialog(context: context, error: l.message ?? 'ERROR');
       },
       (r) {
-        StudentModel student = StudentModel.fromMap(r.data);
+        AdminModel admin = AdminModel.fromMap(r.data);
         showLoadingDialog(context: context, done: true);
         Navigator.pushReplacement(
           context,
           MaterialPageRoute(
-            builder: (context) =>
-                HomeView(studentNumber: student.studentNumber),
+            builder: (context) => AdminHomeView(admin.staffNumber),
           ),
         );
       },

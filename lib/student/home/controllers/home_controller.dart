@@ -1,4 +1,5 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:wsu_laptops/common/models/application.dart';
 import 'package:wsu_laptops/common/models/student_model.dart';
 import 'package:wsu_laptops/student/auth/api/auth_api.dart';
 import 'package:wsu_laptops/student/home/api/student_api.dart';
@@ -11,15 +12,20 @@ final homeControllerProvider =
   );
 });
 
-final getUserDataProvider = FutureProvider.family((ref, String id) async {
+final getStudentDataProvider = FutureProvider.family((ref, String id) async {
   return ref
       .watch(homeControllerProvider.notifier)
-      .getUserData(studentNumber: id);
+      .getStudentData(studentNumber: id);
 });
 
-final getLastestStudentData = StreamProvider((ref) {
+final getApplicationProvider = FutureProvider.family((ref, String id) async {
+  return ref.watch(homeControllerProvider.notifier).getApplication(id: id);
+});
+
+final getLastestStudentDataProvider =
+    StreamProvider.family((ref, String studentNumber) {
   final studentApi = ref.watch(studentApiProvider);
-  return studentApi.getLastestStundentData();
+  return studentApi.getLastestStundentData(studentNumber: studentNumber);
 });
 
 class HomeController extends StateNotifier<bool> {
@@ -32,11 +38,16 @@ class HomeController extends StateNotifier<bool> {
   final StudentApi _studentApi;
   final AuthAPI _authAPI;
 
-  Future<StudentModel> getUserData({required String studentNumber}) async {
+  Future<StudentModel> getStudentData({required String studentNumber}) async {
     final document =
         await _studentApi.getStudentData(studentNumber: studentNumber);
     final updatedUser = StudentModel.fromMap(document.data);
     return updatedUser;
+  }
+
+  Future<ApplicationModel> getApplication({required String id}) async {
+    final map = await _studentApi.getApplication(id: id);
+    return ApplicationModel.fromMap(map);
   }
 
   void logout() => _authAPI.logout();

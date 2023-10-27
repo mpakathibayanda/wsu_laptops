@@ -88,8 +88,29 @@ class ApplicationsController extends StateNotifier<bool> {
   void responding(
       {required ApplicationModel application,
       required BuildContext context}) async {
-    showLoadingDialog(context: context);
+    Navigator.of(context).pop();
     final res = await _applicationsApi.responding(application: application);
+    res.fold((l) {
+      showErrorDialog(
+        context: context,
+        error: l.message ?? 'UNKOWN ERROR',
+      );
+    }, (r) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('Status changed'),
+          backgroundColor: Colors.green,
+        ),
+      );
+      return null;
+    });
+  }
+
+  void collecting(
+      {required ApplicationModel application,
+      required BuildContext context}) async {
+    showLoadingDialog(context: context);
+    final res = await _applicationsApi.collecting(application: application);
     res.fold((l) {
       showLoadingDialog(context: context, done: true);
       showErrorDialog(

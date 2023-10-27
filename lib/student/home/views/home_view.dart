@@ -8,8 +8,8 @@ import 'package:wsu_laptops/student/auth/view/auth_view.dart';
 import 'package:wsu_laptops/student/home/controllers/home_controller.dart';
 
 class HomeView extends ConsumerStatefulWidget {
-  final String student;
-  const HomeView(this.student, {super.key});
+  final String studentNumber;
+  const HomeView({required this.studentNumber, super.key});
   @override
   ConsumerState<ConsumerStatefulWidget> createState() => _HomeViewState();
 }
@@ -25,14 +25,10 @@ class _HomeViewState extends ConsumerState<HomeView> {
     );
   }
 
-  bool isLoad = false;
   @override
   Widget build(BuildContext context) {
-    return ref.watch(getUserDataProvider(widget.student)).when(
+    return ref.watch(getStudentDataProvider(widget.studentNumber)).when(
           data: (student) {
-            setState(() {
-              isLoad = false;
-            });
             return Scaffold(
               appBar: AppBar(
                 title: const Text('WSU LAPTOP APPLICATIONS'),
@@ -51,18 +47,15 @@ class _HomeViewState extends ConsumerState<HomeView> {
                             padding: const EdgeInsets.symmetric(vertical: 25),
                             child: StudentView(student),
                           ),
-                          Visibility(
-                            visible: !isLoad,
-                            child: OutlinedButton(
-                              style: ElevatedButton.styleFrom(
-                                padding: const EdgeInsets.symmetric(
-                                  horizontal: 12,
-                                  vertical: 20,
-                                ),
+                          OutlinedButton(
+                            style: ElevatedButton.styleFrom(
+                              padding: const EdgeInsets.symmetric(
+                                horizontal: 12,
+                                vertical: 20,
                               ),
-                              onPressed: _logout,
-                              child: const Text('Logout'),
                             ),
+                            onPressed: _logout,
+                            child: const Text('Logout'),
                           ),
                         ],
                       ),
@@ -75,12 +68,7 @@ class _HomeViewState extends ConsumerState<HomeView> {
           error: (error, stackTrac) => ErrorPage(
             error: error.toString(),
           ),
-          loading: () {
-            setState(() {
-              isLoad = true;
-            });
-            return const LoadingPage();
-          },
+          loading: () => const LoadingPage(),
         );
   }
 }

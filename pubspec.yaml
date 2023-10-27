@@ -16,7 +16,7 @@ dependencies:
   flutter_riverpod: ^2.4.0
   logger: ^2.0.2
   intl: ^0.18.1
-
+  ai_barcode_scanner: ^3.4.1
 
 dev_dependencies:
   flutter_test:

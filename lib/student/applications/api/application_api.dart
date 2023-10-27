@@ -14,7 +14,8 @@ final applicationAPIProvider = Provider((ref) {
 });
 
 abstract class IApplicationAPI {
-  FutureEitherVoid submitApplitions({required ApplicationModel application});
+  FutureEither<Map<String, dynamic>> submitApplitions(
+      {required ApplicationModel application});
   FutureEither<Map<String, dynamic>> getApplicationById({required String id});
 }
 
@@ -25,22 +26,20 @@ class ApplicationAPI implements IApplicationAPI {
 
   ApplicationAPI({required Databases db}) : _db = db;
   @override
-  FutureEitherVoid submitApplitions(
+  FutureEither<Map<String, dynamic>> submitApplitions(
       {required ApplicationModel application}) async {
     try {
-      _logger.f(application);
-      await _db.createDocument(
+      final res = await _db.createDocument(
         databaseId: AppwriteConstants.applicationsDatabaseId,
         collectionId: AppwriteConstants.applicationCollection,
         documentId: application.student!.studentNumber,
         data: application.toApp(),
       );
-
       _logger.i(
         'Application submitted',
         time: DateTime.now(),
       );
-      return right(null);
+      return right(res.data);
     } on AppwriteException catch (e, s) {
       _logger.e(e.message, error: e, stackTrace: s, time: DateTime.now());
       return left(Failure(stackTrace: s));

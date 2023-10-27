@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:wsu_laptops/admin/applications/controller/applications_controller.dart';
+import 'package:wsu_laptops/admin/applications/controller/admin_applications_controller.dart';
 import 'package:wsu_laptops/admin/widgets/application_item.dart';
 
 class AppSearchDelegate extends SearchDelegate {

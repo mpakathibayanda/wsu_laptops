@@ -7,7 +7,6 @@ import 'package:wsu_laptops/common/widgets/app_body.dart';
 import 'package:wsu_laptops/common/widgets/tile_text.dart';
 import 'package:wsu_laptops/student/applications/controllers/application_ctrl.dart';
 import 'package:wsu_laptops/student/home/views/home_view.dart';
-import 'package:wsu_laptops/student/home/views/not_applied_view.dart';
 
 class StudentApplication extends ConsumerStatefulWidget {
   final StudentModel student;
@@ -34,7 +33,9 @@ class _ApplicationState extends ConsumerState<StudentApplication> {
     if (isCanceling) {
       Navigator.of(context).pushReplacement(
         MaterialPageRoute(
-          builder: (context) => NotAppliedView(student: widget.student),
+          builder: (context) => HomeView(
+            studentNumber: widget.student.studentNumber,
+          ),
         ),
       );
     }
@@ -51,7 +52,10 @@ class _ApplicationState extends ConsumerState<StudentApplication> {
               title: const Text('You want to cancel this application?'),
               actions: [
                 OutlinedButton(
-                  onPressed: () => _onCancel(true),
+                  onPressed: () {
+                    Navigator.of(context).pop();
+                    _onCancel(true);
+                  },
                   child: const Text('YES'),
                 ),
                 ElevatedButton(
@@ -91,7 +95,9 @@ class _ApplicationState extends ConsumerState<StudentApplication> {
                                         context,
                                         MaterialPageRoute(
                                           builder: (context) => HomeView(
-                                              widget.student.studentNumber),
+                                            studentNumber:
+                                                widget.student.studentNumber,
+                                          ),
                                         ),
                                       );
                                       cancel = true;

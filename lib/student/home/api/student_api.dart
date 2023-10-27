@@ -13,7 +13,9 @@ final studentApiProvider = Provider((ref) {
 
 abstract class IStudentApi {
   Future<Document> getStudentData({required String studentNumber});
-  Stream<RealtimeMessage> getLastestStundentData();
+  Future<Map<String, dynamic>> getApplication({required String id});
+  Stream<RealtimeMessage> getLastestStundentData(
+      {required String studentNumber});
 }
 
 class StudentApi implements IStudentApi {
@@ -33,9 +35,32 @@ class StudentApi implements IStudentApi {
   }
 
   @override
-  Stream<RealtimeMessage> getLastestStundentData() {
+  Future<Map<String, dynamic>> getApplication({required String id}) async {
+    final appDoc = await _db.getDocument(
+      databaseId: AppwriteConstants.applicationsDatabaseId,
+      collectionId: AppwriteConstants.applicationCollection,
+      documentId: id,
+    );
+
+    final stundentDoc = await _db.getDocument(
+      databaseId: AppwriteConstants.studentsDatabaseId,
+      collectionId: AppwriteConstants.studentsCollection,
+      documentId: id,
+    );
+    Map<String, dynamic> appInfo = appDoc.data;
+
+    appDoc.data.addAll(
+      {'student': stundentDoc.data},
+    );
+    return appInfo;
+  }
+
+  @override
+  Stream<RealtimeMessage> getLastestStundentData({
+    required String studentNumber,
+  }) {
     return _realtime.subscribe([
-      'databases.${AppwriteConstants.studentsDatabaseId}.collections.${AppwriteConstants.studentsCollection}.documents'
+      'databases.${AppwriteConstants.applicationsDatabaseId}.collections.${AppwriteConstants.applicationCollection}.documents.$studentNumber'
     ]).stream;
   }
 }

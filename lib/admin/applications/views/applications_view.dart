@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:wsu_laptops/admin/applications/controller/applications_controller.dart';
+import 'package:wsu_laptops/admin/applications/controller/admin_applications_controller.dart';
 import 'package:wsu_laptops/admin/widgets/application_item.dart';
 import 'package:wsu_laptops/admin/widgets/search_delegate.dart';
 import 'package:wsu_laptops/common/constants/appwite_consts.dart';
@@ -54,43 +54,47 @@ class _ApplicationsViewState extends ConsumerState<ApplicationsView> {
                     }
                   }
                 }
-                return Scaffold(
-                  appBar: AppBar(
-                    title: const Text(
-                      'Applications',
-                      style: TextStyle(
-                        fontSize: 22,
-                        fontWeight: FontWeight.bold,
-                      ),
-                    ),
-                    actions: [
-                      IconButton(
-                        onPressed: () async {
-                          showSearch(
-                            context: context,
-                            delegate: AppSearchDelegate(ref),
-                          );
-                        },
-                        icon: const Icon(Icons.search),
-                        tooltip:
-                            'Search application by student number or a name',
-                      ),
-                    ],
-                  ),
-                  body: SafeArea(
-                    child: AppBody(
-                      color: Colors.white,
-                      child: ListView.builder(
-                        itemCount: applications.length,
-                        itemBuilder: (context, index) {
-                          return ApplicationItem(
-                            application: applications[index],
-                          );
-                        },
-                      ),
-                    ),
-                  ),
-                );
+                return applications.isNotEmpty
+                    ? Scaffold(
+                        appBar: AppBar(
+                          title: const Text(
+                            'Applications',
+                            style: TextStyle(
+                              fontSize: 22,
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
+                          actions: [
+                            IconButton(
+                              onPressed: () async {
+                                showSearch(
+                                  context: context,
+                                  delegate: AppSearchDelegate(ref),
+                                );
+                              },
+                              icon: const Icon(Icons.search),
+                              tooltip:
+                                  'Search application by student number or a name',
+                            ),
+                          ],
+                        ),
+                        body: SafeArea(
+                          child: AppBody(
+                            color: Colors.white,
+                            child: ListView.builder(
+                              itemCount: applications.length,
+                              itemBuilder: (context, index) {
+                                return ApplicationItem(
+                                  application: applications[index],
+                                );
+                              },
+                            ),
+                          ),
+                        ),
+                      )
+                    : const Center(
+                        child: Text('NO APPLICATIONS'),
+                      );
               },
               error: (error, stackTrace) {
                 return const ErrorPage(error: 'Something went wrong');
