@@ -30,7 +30,7 @@ class _ApplicationViewState extends ConsumerState<ApplicationView> {
     showDialog(
       context: context,
       barrierDismissible: false,
-      builder: (context) {
+      builder: (BuildContext bcontext) {
         return SimpleDialog(
           title: const Text('COLLECTION DATE'),
           children: [
@@ -91,6 +91,7 @@ class _ApplicationViewState extends ConsumerState<ApplicationView> {
                       status: 'Accepted',
                       collectionDate: date!.millisecondsSinceEpoch.toString(),
                     );
+                    Navigator.of(bcontext).pop();
                     ref.watch(applicationControllerProvider).responding(
                           application: application,
                           context: context,
@@ -141,7 +142,7 @@ class _ApplicationViewState extends ConsumerState<ApplicationView> {
     showDialog(
       context: context,
       barrierDismissible: false,
-      builder: (context) {
+      builder: (dcontext) {
         return SimpleDialog(
           title: const Text('REJECTING'),
           children: [
@@ -159,6 +160,7 @@ class _ApplicationViewState extends ConsumerState<ApplicationView> {
                   ApplicationModel application = app.copyWith(
                     status: 'Rejected',
                   );
+                  Navigator.of(dcontext).pop();
                   ref.watch(applicationControllerProvider).responding(
                         application: application,
                         context: context,
@@ -214,7 +216,7 @@ class _ApplicationViewState extends ConsumerState<ApplicationView> {
             return ref.watch(getLatestApplicationsProvider).when(
               data: (data) {
                 final isUpdated = data.events.contains(
-                  'databases.${AppwriteConstants.applicationsDatabaseId}.collections.${AppwriteConstants.applicationCollection}.documents.${application.student!.studentNumber}.update',
+                  'databases.${AppwriteConstants.databaseId}.collections.${AppwriteConstants.applicationsCollection}.documents.${application.student!.studentNumber}.update',
                 );
                 if (isUpdated) {
                   final payload = data.payload;
@@ -286,7 +288,7 @@ class _ApplicationViewState extends ConsumerState<ApplicationView> {
                                       showDialog(
                                         context: context,
                                         barrierDismissible: false,
-                                        builder: (context) {
+                                        builder: (context1) {
                                           return SimpleDialog(
                                             title:
                                                 const Text('Changing Status'),
@@ -473,7 +475,7 @@ class _ApplicationViewState extends ConsumerState<ApplicationView> {
                                       showDialog(
                                         context: context,
                                         barrierDismissible: false,
-                                        builder: (context) {
+                                        builder: (context1) {
                                           return SimpleDialog(
                                             title:
                                                 const Text('Changing Status'),
@@ -484,7 +486,8 @@ class _ApplicationViewState extends ConsumerState<ApplicationView> {
                                                   onPressed: () {
                                                     Navigator.of(context).pop();
                                                     showAcceptDialog(
-                                                        application);
+                                                      application,
+                                                    );
                                                   },
                                                   child: const Text(
                                                     'Accept',

@@ -26,7 +26,7 @@ class LaptopsApi implements ILaptopsApi {
   FutureEither<List<Document>> getAllLaptops() async {
     try {
       final res = await _db.listDocuments(
-        databaseId: AppwriteConstants.applicationsDatabaseId,
+        databaseId: AppwriteConstants.databaseId,
         collectionId: AppwriteConstants.laptopsCollection,
       );
       return right(res.documents);
@@ -42,7 +42,7 @@ class LaptopsApi implements ILaptopsApi {
     try {
       final res = await _db.getDocument(
         collectionId: AppwriteConstants.laptopsCollection,
-        databaseId: AppwriteConstants.applicationsDatabaseId,
+        databaseId: AppwriteConstants.databaseId,
         documentId: name,
       );
       return right(res);

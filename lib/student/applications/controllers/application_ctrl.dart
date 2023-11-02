@@ -70,7 +70,7 @@ class ApplicationController extends StateNotifier<bool> {
   Future<ApplicationModel?> getApplicationById({required String id}) async {
     final res = await _appAPI.getApplicationById(id: id);
     return res.fold((l) {
-      _logger.e(
+      _logger.i(
         'Error on get applications',
         error: l.error,
         stackTrace: l.stackTrace,
@@ -78,6 +78,9 @@ class ApplicationController extends StateNotifier<bool> {
       return null;
     }, (r) {
       if (r.containsKey('not')) {
+        _logger.i(
+          'Not Applied yet',
+        );
         return null;
       } else {
         return ApplicationModel.fromMap(r);

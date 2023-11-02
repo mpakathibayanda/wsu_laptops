@@ -146,6 +146,11 @@ class _ApplicationState extends ConsumerState<StudentApplication> {
                       color: Colors.grey,
                     ),
                     TileTxt(
+                      txt: 'Funded: ',
+                      value: widget.student.isFunded,
+                      color: Colors.grey,
+                    ),
+                    TileTxt(
                       txt: 'Qualification: ',
                       value: widget.student.qualification,
                       color: Colors.grey,

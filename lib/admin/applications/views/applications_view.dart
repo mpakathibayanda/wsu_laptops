@@ -24,24 +24,25 @@ class _ApplicationsViewState extends ConsumerState<ApplicationsView> {
           data: (applications) {
             return ref.watch(getLatestApplicationsProvider).when(
               data: (data) {
-                final isUpdated = data.events.contains(
-                  'databases.${AppwriteConstants.applicationsDatabaseId}.collections.${AppwriteConstants.applicationCollection}.documents.*.update',
+                final isUpdate = data.events.contains(
+                  'databases.${AppwriteConstants.databaseId}.collections.${AppwriteConstants.applicationsCollection}.documents.*.update',
                 );
-                final isCreated = data.events.contains(
-                  'databases.${AppwriteConstants.applicationsDatabaseId}.collections.${AppwriteConstants.applicationCollection}.documents.*.create',
+                final isCreate = data.events.contains(
+                  'databases.${AppwriteConstants.databaseId}.collections.${AppwriteConstants.applicationsCollection}.documents.*.create',
                 );
-                if (isUpdated || isCreated) {
-                  if (isUpdated) {
+                final isDelete = data.events.contains(
+                  'databases.${AppwriteConstants.databaseId}.collections.${AppwriteConstants.applicationsCollection}.documents.*.delete',
+                );
+                final any = isCreate || isUpdate || isDelete;
+                if (any) {
+                  if (isUpdate) {
                     var updatedApp = ApplicationModel.fromMap(data.payload);
                     final i = applications.indexWhere(
                       (app) => app.studentNumber == updatedApp.studentNumber,
                     );
-                    var newApp = updatedApp.copyWith(
-                      student: applications[i].student,
-                    );
-                    applications[i] = newApp;
+                    applications[i] = updatedApp;
                   }
-                  if (isCreated) {
+                  if (isCreate) {
                     final newApp = ref
                         .watch(
                           getApplicationProvider(
@@ -52,6 +53,12 @@ class _ApplicationsViewState extends ConsumerState<ApplicationsView> {
                     if (newApp != null) {
                       applications.add(newApp);
                     }
+                  }
+                  if (isDelete) {
+                    final deleted = ApplicationModel.fromMap(data.payload);
+                    applications.removeWhere(
+                      (app) => deleted.studentNumber == app.studentNumber,
+                    );
                   }
                 }
                 return applications.isNotEmpty
@@ -83,6 +90,7 @@ class _ApplicationsViewState extends ConsumerState<ApplicationsView> {
                             color: Colors.white,
                             child: ListView.builder(
                               itemCount: applications.length,
+                              padding: const EdgeInsets.symmetric(vertical: 10),
                               itemBuilder: (context, index) {
                                 return ApplicationItem(
                                   application: applications[index],

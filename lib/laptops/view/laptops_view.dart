@@ -90,7 +90,12 @@ class _LaptopsViewState extends ConsumerState<LaptopsView> {
       },
       loading: () {
         return const Center(
-          child: Text('GETTING LAPTOPS...'),
+          child: Text(
+            'LOADING LAPTOPS...',
+            style: TextStyle(
+              fontWeight: FontWeight.bold,
+            ),
+          ),
         );
       },
     );

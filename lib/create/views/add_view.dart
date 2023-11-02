@@ -11,9 +11,29 @@ class AddView extends ConsumerWidget {
     return Scaffold(
       body: SafeArea(
         child: Center(
-          child: ElevatedButton(
-            onPressed: () => ctrl.addStudents(context),
-            child: const Text('Add Students'),
+          child: Padding(
+            padding: const EdgeInsets.all(8.0),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              mainAxisAlignment: MainAxisAlignment.center,
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                ElevatedButton(
+                  onPressed: () => ctrl.addStudents(context),
+                  child: const Text('Add Students'),
+                ),
+                const SizedBox(height: 15),
+                ElevatedButton(
+                  onPressed: () => ctrl.addLaptops(context),
+                  child: const Text('Add Laptops'),
+                ),
+                const SizedBox(height: 15),
+                ElevatedButton(
+                  onPressed: () => ctrl.addAdmins(context),
+                  child: const Text('Add Admins'),
+                ),
+              ],
+            ),
           ),
         ),
       ),

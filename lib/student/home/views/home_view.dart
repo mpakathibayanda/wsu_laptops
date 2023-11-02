@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:logger/logger.dart';
 import 'package:wsu_laptops/common/widgets/app_body.dart';
 import 'package:wsu_laptops/student/home/views/student_view.dart';
 import 'package:wsu_laptops/common/widgets/error_page.dart';
@@ -44,7 +45,7 @@ class _HomeViewState extends ConsumerState<HomeView> {
                         crossAxisAlignment: CrossAxisAlignment.stretch,
                         children: [
                           Padding(
-                            padding: const EdgeInsets.symmetric(vertical: 25),
+                            padding: const EdgeInsets.symmetric(vertical: 5),
                             child: StudentView(student),
                           ),
                           OutlinedButton(
@@ -65,9 +66,17 @@ class _HomeViewState extends ConsumerState<HomeView> {
               ),
             );
           },
-          error: (error, stackTrac) => ErrorPage(
-            error: error.toString(),
-          ),
+          error: (error, stackTrac) {
+            Logger logger = Logger();
+            logger.e(
+              'Error on Home page',
+              error: error,
+              stackTrace: stackTrac,
+            );
+            return ErrorPage(
+              error: error.toString(),
+            );
+          },
           loading: () => const LoadingPage(),
         );
   }

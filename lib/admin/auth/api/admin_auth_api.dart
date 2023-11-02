@@ -3,47 +3,45 @@ import 'package:appwrite/models.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:fpdart/fpdart.dart';
 import 'package:logger/logger.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:wsu_laptops/common/constants/appwite_consts.dart';
 import 'package:wsu_laptops/common/core/failure.dart';
 import 'package:wsu_laptops/common/core/providers.dart';
 import 'package:wsu_laptops/common/core/type_defs.dart';
 
 final admniAuthAPIProvider = Provider((ref) {
-  final account = ref.watch(appwriteAccountProvider);
   final db = ref.watch(appwriteDatabaseProvider);
-  return AdmniAuthAPI(account: account, db: db);
+  return AdmniAuthAPI(db: db);
 });
 
 abstract class IAdmniAuthAPI {
   FutureEither<Document> login(
       {required String staffNumber, required String pin});
-  Future<User?> currentUserAccount();
+  Future<String?> currentAdminCred();
   FutureEitherVoid logout();
 }
 
 class AdmniAuthAPI implements IAdmniAuthAPI {
-  final Account _account;
+  final Future<SharedPreferences> _prefs = SharedPreferences.getInstance();
   final Databases _db;
   final Logger _logger = Logger();
-  AdmniAuthAPI({required Account account, required db})
-      : _account = account,
-        _db = db;
+  AdmniAuthAPI({required db}) : _db = db;
 
   @override
   FutureEither<Document> login(
       {required String staffNumber, required String pin}) async {
     try {
-      await _account.createEmailSession(
-        email: 'admin@email.com',
-        password: 'Admin1234',
-      );
       final doc = await _db.getDocument(
-        databaseId: AppwriteConstants.adminDatabaseId,
+        databaseId: AppwriteConstants.databaseId,
         collectionId: AppwriteConstants.adminCollection,
         documentId: staffNumber,
       );
+
       Map cred = doc.data;
       if (cred['pin'] == pin) {
+        final pref = await _prefs;
+        pref.setString('staffNumber', staffNumber);
+        pref.setString('pin', pin);
         _logger.i('Logged in succefully');
         return right(doc);
       } else {
@@ -101,18 +99,12 @@ class AdmniAuthAPI implements IAdmniAuthAPI {
   @override
   FutureEitherVoid logout() async {
     try {
-      await _account.deleteSession(sessionId: 'current');
-      _logger.i('Logged out', time: DateTime.now());
-      return right(null);
-    } on AppwriteException catch (e, stackTrace) {
-      _logger.e(e.message,
-          error: e, stackTrace: stackTrace, time: DateTime.now());
-      return left(
-        Failure(
-          message: e.message ?? 'Some unexpected error occurred',
-          stackTrace: stackTrace,
-        ),
-      );
+      final pref = await _prefs;
+      final clr = await pref.clear();
+      if (clr) {
+        return right(null);
+      }
+      return left(const Failure(message: 'Cannot logout, try again'));
     } catch (e, stackTrace) {
       _logger.e(e.toString(),
           error: e, stackTrace: stackTrace, time: DateTime.now());
@@ -123,13 +115,16 @@ class AdmniAuthAPI implements IAdmniAuthAPI {
   }
 
   @override
-  Future<User?> currentUserAccount() async {
+  Future<String?> currentAdminCred() async {
     try {
-      return await _account.get();
-    } on AppwriteException catch (e, stackTrace) {
-      _logger.e(e.message,
-          error: e, stackTrace: stackTrace, time: DateTime.now());
-      return null;
+      final pref = await _prefs;
+      final staffNumber = pref.getString('staffNumber');
+      final pin = pref.getString('pin');
+      if (staffNumber != null && pin != null) {
+        return staffNumber;
+      } else {
+        return null;
+      }
     } catch (e, stackTrace) {
       _logger.e(e.toString(),
           error: e, stackTrace: stackTrace, time: DateTime.now());

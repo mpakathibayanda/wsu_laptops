@@ -1,4 +1,3 @@
-import 'package:appwrite/models.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:wsu_laptops/common/core/utils.dart';
@@ -12,9 +11,9 @@ final authControllerProvider = Provider<AuthController>((ref) {
   );
 });
 
-final currentUserAccountProvider = FutureProvider((ref) {
-  final authController = ref.watch(authControllerProvider);
-  return authController.currentUser();
+final currentUserCredProvider = FutureProvider((ref) {
+  final authApi = ref.watch(authAPIProvider);
+  return authApi.currentUserCred();
 });
 
 class AuthController extends StateNotifier<bool> {
@@ -22,7 +21,6 @@ class AuthController extends StateNotifier<bool> {
   AuthController({required AuthAPI authAPI})
       : _authAPI = authAPI,
         super(false);
-  Future<User?> currentUser() => _authAPI.currentUserAccount();
   void login({
     required String studentNumber,
     required String pin,

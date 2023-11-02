@@ -7,66 +7,54 @@ import 'package:wsu_laptops/common/constants/appwite_consts.dart';
 import 'package:wsu_laptops/common/core/failure.dart';
 import 'package:wsu_laptops/common/core/providers.dart';
 import 'package:wsu_laptops/common/core/type_defs.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 final authAPIProvider = Provider((ref) {
-  final account = ref.watch(appwriteAccountProvider);
   final db = ref.watch(appwriteDatabaseProvider);
-  return AuthAPI(account: account, db: db);
+  return AuthAPI(db: db);
 });
 
 abstract class IAuthAPI {
   FutureEither<Document> login(
       {required String studentNumber, required String pin});
-  Future<User?> currentUserAccount();
+  Future<String?> currentUserCred();
   FutureEitherVoid logout();
 }
 
 class AuthAPI implements IAuthAPI {
-  final Account _account;
   final Databases _db;
+  final Future<SharedPreferences> _prefs = SharedPreferences.getInstance();
   final Logger _logger = Logger();
-  AuthAPI({required Account account, required db})
-      : _account = account,
-        _db = db;
+  AuthAPI({required db}) : _db = db;
 
   @override
   FutureEither<Document> login(
       {required String studentNumber, required String pin}) async {
     try {
-      await _account.createEmailSession(
-        email: 'test@gmail.com',
-        password: 'Test1234',
-      );
       final doc = await _db.getDocument(
-        databaseId: AppwriteConstants.studentsDatabaseId,
+        databaseId: AppwriteConstants.databaseId,
         collectionId: AppwriteConstants.studentsCollection,
         documentId: studentNumber,
       );
+
       Map cred = doc.data;
       if (cred['pin'] == pin) {
+        final pref = await _prefs;
+        pref.setString('studentNumber', studentNumber);
+        pref.setString('pin', pin);
         _logger.i('Logged in succefully');
         return right(doc);
       } else {
-        logout();
         _logger.w('Invalid credentials');
         return left(
           const Failure(message: 'Invalid credentials'),
         );
       }
     } on AppwriteException catch (e, stackTrace) {
-      logout();
       _logger.e(e.message,
           error: e, stackTrace: stackTrace, time: DateTime.now());
       if (e.message != null) {
-        if (e.message!.contains('exceeded')) {
-          return left(
-            Failure(
-              message:
-                  'Too many login attempts, you exceeded daily limit, try again later',
-              stackTrace: stackTrace,
-            ),
-          );
-        } else if (e.message!
+        if (e.message!
             .contains('Document with the requested ID could not be found')) {
           return left(
             Failure(
@@ -77,7 +65,7 @@ class AuthAPI implements IAuthAPI {
         } else {
           return left(
             Failure(
-              message: 'Anexpected error, check your internet connection',
+              message: 'Unexpected error, check your internet connection',
               stackTrace: stackTrace,
             ),
           );
@@ -85,7 +73,7 @@ class AuthAPI implements IAuthAPI {
       } else {
         return left(
           Failure(
-            message: 'Unknown error accured',
+            message: 'Unknown error accurred',
             stackTrace: stackTrace,
           ),
         );
@@ -93,7 +81,6 @@ class AuthAPI implements IAuthAPI {
     } catch (e, stackTrace) {
       _logger.e(e.toString(),
           error: e, stackTrace: stackTrace, time: DateTime.now());
-      logout();
       return left(Failure(message: e.toString(), stackTrace: stackTrace));
     }
   }
@@ -101,18 +88,12 @@ class AuthAPI implements IAuthAPI {
   @override
   FutureEitherVoid logout() async {
     try {
-      await _account.deleteSession(sessionId: 'current');
-      _logger.i('Logged out', time: DateTime.now());
-      return right(null);
-    } on AppwriteException catch (e, stackTrace) {
-      _logger.e(e.message,
-          error: e, stackTrace: stackTrace, time: DateTime.now());
-      return left(
-        Failure(
-          message: e.message ?? 'Some unexpected error occurred',
-          stackTrace: stackTrace,
-        ),
-      );
+      final pref = await _prefs;
+      final clr = await pref.clear();
+      if (clr) {
+        return right(null);
+      }
+      return left(const Failure(message: 'Cannot logout, try again'));
     } catch (e, stackTrace) {
       _logger.e(e.toString(),
           error: e, stackTrace: stackTrace, time: DateTime.now());
@@ -123,13 +104,16 @@ class AuthAPI implements IAuthAPI {
   }
 
   @override
-  Future<User?> currentUserAccount() async {
+  Future<String?> currentUserCred() async {
     try {
-      return await _account.get();
-    } on AppwriteException catch (e, stackTrace) {
-      _logger.e(e.message,
-          error: e, stackTrace: stackTrace, time: DateTime.now());
-      return null;
+      final pref = await _prefs;
+      final studNumber = pref.getString('studentNumber');
+      final pin = pref.getString('pin');
+      if (studNumber != null && pin != null) {
+        return studNumber;
+      } else {
+        return null;
+      }
     } catch (e, stackTrace) {
       _logger.e(e.toString(),
           error: e, stackTrace: stackTrace, time: DateTime.now());

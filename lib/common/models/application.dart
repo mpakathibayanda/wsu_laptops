@@ -66,18 +66,7 @@ class ApplicationModel {
       'status': status,
       'date': date,
       'collectionDate': collectionDate,
-    };
-  }
-
-  Map<String, dynamic> fromApp() {
-    return <String, dynamic>{
-      'studentNumber': studentNumber,
-      'isFunded': student!.isFunded,
-      'brandName': brandName,
-      'serialNumber': serialNumber,
-      'status': status,
-      'date': date,
-      'collectionDate': collectionDate,
+      'student': student!.studentNumber,
     };
   }
 

@@ -30,8 +30,8 @@ class ApplicationAPI implements IApplicationAPI {
       {required ApplicationModel application}) async {
     try {
       final res = await _db.createDocument(
-        databaseId: AppwriteConstants.applicationsDatabaseId,
-        collectionId: AppwriteConstants.applicationCollection,
+        databaseId: AppwriteConstants.databaseId,
+        collectionId: AppwriteConstants.applicationsCollection,
         documentId: application.student!.studentNumber,
         data: application.toApp(),
       );
@@ -53,42 +53,30 @@ class ApplicationAPI implements IApplicationAPI {
   FutureEither<Map<String, dynamic>> getApplicationById(
       {required String id}) async {
     try {
-      // _logger.f('Requisting Applications info for: $id');
       final appDoc = await _db.getDocument(
-        databaseId: AppwriteConstants.applicationsDatabaseId,
-        collectionId: AppwriteConstants.applicationCollection,
-        documentId: id,
-      );
-
-      final stundentDoc = await _db.getDocument(
-        databaseId: AppwriteConstants.studentsDatabaseId,
-        collectionId: AppwriteConstants.studentsCollection,
+        databaseId: AppwriteConstants.databaseId,
+        collectionId: AppwriteConstants.applicationsCollection,
         documentId: id,
       );
       Map<String, dynamic> appInfo = appDoc.data;
-
-      appDoc.data.addAll(
-        {'student': stundentDoc.data},
+      _logger.i(
+        '[APPLICATION API] Got Application',
+        time: DateTime.now(),
       );
-
-      // _logger.i(
-      //   'Application info : ${appDoc.data}',
-      //   time: DateTime.now(),
-      // );
       return right(appInfo);
     } on AppwriteException catch (e, s) {
+      if (e.message != null) {
+        if (e.message!
+            .contains('Document with the requested ID could not be found')) {
+          return right({'not': true});
+        }
+      }
       _logger.e(
         e.message,
         error: e,
         stackTrace: s,
         time: DateTime.now(),
       );
-      if (e.message != null) {
-        _logger.e(e.message, error: e, stackTrace: s, time: DateTime.now());
-        if (e.message!.contains('not found')) {
-          return right({'not': true});
-        }
-      }
       return left(Failure(stackTrace: s));
     } catch (e, s) {
       _logger.e(e.toString(), error: e, stackTrace: s, time: DateTime.now());

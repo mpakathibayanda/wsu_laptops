@@ -46,6 +46,17 @@ class LaptopModel {
     };
   }
 
+  Map<String, dynamic> toAppwrite() {
+    return <String, dynamic>{
+      'brandName': brandName,
+      'price': price,
+      'warrant': warrant,
+      'ramSize': ramSize,
+      'storage': storage,
+      'serialNumber': laptopSerialNumber,
+    };
+  }
+
   factory LaptopModel.fromMap(Map<String, dynamic> map) {
     return LaptopModel(
       brandName: map['brandName'] as String,

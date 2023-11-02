@@ -88,7 +88,6 @@ class ApplicationsController extends StateNotifier<bool> {
   void responding(
       {required ApplicationModel application,
       required BuildContext context}) async {
-    Navigator.of(context).pop();
     final res = await _applicationsApi.responding(application: application);
     res.fold((l) {
       showErrorDialog(

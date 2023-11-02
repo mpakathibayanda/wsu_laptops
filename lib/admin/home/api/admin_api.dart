@@ -21,7 +21,7 @@ class AdminApi implements IAdminApi {
   @override
   Future<Document> getAdminData({required String staffNumber}) async {
     return _db.getDocument(
-      databaseId: AppwriteConstants.adminDatabaseId,
+      databaseId: AppwriteConstants.databaseId,
       collectionId: AppwriteConstants.adminCollection,
       documentId: staffNumber,
     );

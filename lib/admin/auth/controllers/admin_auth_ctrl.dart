@@ -1,4 +1,3 @@
-import 'package:appwrite/models.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:wsu_laptops/admin/auth/api/admin_auth_api.dart';
@@ -12,9 +11,9 @@ final adminAuthControllerProvider = Provider<AdminAuthController>((ref) {
   );
 });
 
-final currentUserAccountProvider = FutureProvider((ref) {
-  final adminAuthController = ref.watch(adminAuthControllerProvider);
-  return adminAuthController.currentUser();
+final currentAdminCredProvider = FutureProvider((ref) {
+  final authApi = ref.watch(admniAuthAPIProvider);
+  return authApi.currentAdminCred();
 });
 
 class AdminAuthController extends StateNotifier<bool> {
@@ -22,7 +21,6 @@ class AdminAuthController extends StateNotifier<bool> {
   AdminAuthController({required AdmniAuthAPI authAPI})
       : _authAPI = authAPI,
         super(false);
-  Future<User?> currentUser() => _authAPI.currentUserAccount();
   void login({
     required String staffNumber,
     required String pin,
@@ -30,7 +28,6 @@ class AdminAuthController extends StateNotifier<bool> {
   }) async {
     showLoadingDialog(context: context, title: 'Login...');
     final res = await _authAPI.login(staffNumber: staffNumber, pin: pin);
-
     res.fold(
       (l) {
         showLoadingDialog(context: context, done: true);

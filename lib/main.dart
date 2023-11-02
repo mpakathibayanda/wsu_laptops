@@ -3,7 +3,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:wsu_laptops/admin/auth/views/admin_auth_view.dart';
+import 'package:wsu_laptops/admin/auth/views/admin_redirect.dart';
+import 'package:wsu_laptops/create/views/add_redirect_view.dart';
 import 'package:wsu_laptops/student/auth/view/auth_view.dart';
+import 'package:wsu_laptops/student/auth/view/redirect.dart';
 
 void main() {
   runApp(
@@ -36,8 +39,9 @@ class MyApp extends ConsumerWidget {
           ),
         ),
       ),
-      // home: const AdminAuthView(), //FOR ADMIN APP
-      home: const AuthView(), // FOR APPLICANT APP
+      // home: const AdminRedirectView() //FOR ADMIN APP
+      home: const StudentRedirectView(), // FOR STUDENT APP
+      // home: const AddRedictPage(), // FOR CREATE APP
     );
   }
 }
