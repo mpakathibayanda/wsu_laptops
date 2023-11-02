@@ -10,25 +10,31 @@ class ErrorPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: Container(
-          color: Colors.white,
-          width: 50,
-          child: Image.asset(
-            'assets/wsu.png',
-          ),
-        ),
-      ),
+      appBar: AppBar(),
       body: SafeArea(
-        child: Center(
-          child: Text(
-            error,
-            textAlign: TextAlign.center,
-            style: const TextStyle(
-              fontWeight: FontWeight.bold,
-              fontSize: 22,
-            ),
-          ),
+        child: ErrorText(error: error),
+      ),
+    );
+  }
+}
+
+class ErrorText extends StatelessWidget {
+  const ErrorText({
+    super.key,
+    required this.error,
+  });
+
+  final String error;
+
+  @override
+  Widget build(BuildContext context) {
+    return Center(
+      child: Text(
+        error,
+        textAlign: TextAlign.center,
+        style: const TextStyle(
+          fontWeight: FontWeight.bold,
+          fontSize: 22,
         ),
       ),
     );

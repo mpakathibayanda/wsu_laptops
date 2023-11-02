@@ -7,36 +7,39 @@ class LoadingPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: Container(
-          color: Colors.white,
-          width: 50,
-          child: Image.asset(
-            'assets/wsu.png',
-          ),
-        ),
+    return const Scaffold(
+      body: SafeArea(
+        child: Loading(),
       ),
-      body: const SafeArea(
-          child: Center(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          crossAxisAlignment: CrossAxisAlignment.center,
-          children: [
-            CircularProgressIndicator(
-              color: Colors.black,
+    );
+  }
+}
+
+class Loading extends StatelessWidget {
+  const Loading({
+    super.key,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return const Center(
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        crossAxisAlignment: CrossAxisAlignment.center,
+        children: [
+          CircularProgressIndicator(
+            color: Colors.black,
+          ),
+          SizedBox(height: 25),
+          Text(
+            'LOADING...',
+            style: TextStyle(
+              fontWeight: FontWeight.bold,
+              fontSize: 22,
             ),
-            SizedBox(height: 25),
-            Text(
-              'LOADING...',
-              style: TextStyle(
-                fontWeight: FontWeight.bold,
-                fontSize: 22,
-              ),
-            )
-          ],
-        ),
-      )),
+          )
+        ],
+      ),
     );
   }
 }

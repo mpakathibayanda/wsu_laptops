@@ -2,9 +2,11 @@ import 'package:flutter/material.dart';
 
 class AppBody extends StatelessWidget {
   final Widget child;
+  final Color? color;
   const AppBody({
     super.key,
     required this.child,
+    this.color,
   });
 
   @override
@@ -15,9 +17,11 @@ class AppBody extends StatelessWidget {
           minWidth: 240,
           maxWidth: 600,
         ),
-        height: MediaQuery.of(context).size.height - 25,
-        decoration: const BoxDecoration(
-          color: Colors.white,
+        height: MediaQuery.of(context).size.width > 450
+            ? MediaQuery.of(context).size.height - 25
+            : MediaQuery.of(context).size.height,
+        decoration: BoxDecoration(
+          color: color ?? Colors.white,
         ),
         child: child,
       ),

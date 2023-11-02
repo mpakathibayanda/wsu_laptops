@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
 
 void showSnackBar(BuildContext context, String content) {
   ScaffoldMessenger.of(context).showSnackBar(
@@ -81,4 +82,15 @@ void showErrorDialog({
       );
     },
   );
+}
+
+String dateTime(String date) {
+  if (date.length > 3 && date != 'Panding') {
+    date = DateFormat.yMMMMd('en_US').format(
+      DateTime.fromMillisecondsSinceEpoch(
+        int.parse(date),
+      ),
+    );
+  }
+  return date;
 }

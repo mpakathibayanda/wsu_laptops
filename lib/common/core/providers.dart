@@ -1,6 +1,7 @@
 import 'package:appwrite/appwrite.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:wsu_laptops/common/constants/appwite_consts.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 final appwriteClientProvider = Provider((ref) {
   Client client = Client();
@@ -30,7 +31,6 @@ final appwriteRealtimeProvider = Provider((ref) {
   return Realtime(client);
 });
 
-final appwritePrefsProvider = FutureProvider((ref) async {
-  final account = ref.watch(appwriteAccountProvider);
-  return await account.getPrefs();
+final sharedPrefsProvider = FutureProvider((ref) async {
+  return await SharedPreferences.getInstance();
 });

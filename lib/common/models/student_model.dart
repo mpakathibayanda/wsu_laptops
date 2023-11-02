@@ -1,75 +1,89 @@
 // ignore_for_file: public_member_api_docs, sort_constructors_first
 import 'dart:convert';
 
-import 'package:wsu_laptops/common/models/laptop_model.dart';
-
 class StudentModel {
   String studentNumber;
+  String? pin;
   String name;
   String surname;
-  String department;
-  String course;
-  String status;
+  String gender;
+  String faculty;
+  String qualification;
+  String level;
+  String campus;
+  String number;
   String isFunded;
-  LaptopModel? laptopModel;
   StudentModel({
     required this.studentNumber,
+    this.pin,
     required this.name,
     required this.surname,
-    required this.department,
-    required this.course,
-    required this.status,
+    required this.gender,
+    required this.faculty,
+    required this.qualification,
+    required this.level,
+    required this.campus,
+    required this.number,
     required this.isFunded,
-    this.laptopModel,
   });
 
   StudentModel copyWith({
     String? studentNumber,
+    String? pin,
     String? name,
     String? surname,
-    String? department,
-    String? course,
-    String? status,
+    String? gender,
+    String? faculty,
+    String? qualification,
+    String? level,
+    String? campus,
+    String? number,
     String? isFunded,
-    LaptopModel? laptopModel,
   }) {
     return StudentModel(
       studentNumber: studentNumber ?? this.studentNumber,
+      pin: pin ?? this.pin,
       name: name ?? this.name,
       surname: surname ?? this.surname,
-      department: department ?? this.department,
-      course: course ?? this.course,
-      status: status ?? this.status,
+      gender: gender ?? this.gender,
+      faculty: faculty ?? this.faculty,
+      qualification: qualification ?? this.qualification,
+      level: level ?? this.level,
+      campus: campus ?? this.campus,
+      number: number ?? this.number,
       isFunded: isFunded ?? this.isFunded,
-      laptopModel: laptopModel ?? this.laptopModel,
     );
   }
 
   Map<String, dynamic> toMap() {
     return <String, dynamic>{
       'studentNumber': studentNumber,
+      'pin': pin,
       'name': name,
       'surname': surname,
-      'department': department,
-      'course': course,
-      'status': status,
+      'gender': gender,
+      'faculty': faculty,
+      'qualification': qualification,
+      'level': level,
+      'campus': campus,
+      'number': number,
       'isFunded': isFunded,
-      'laptopModel': laptopModel?.toMap(),
     };
   }
 
   factory StudentModel.fromMap(Map<String, dynamic> map) {
     return StudentModel(
       studentNumber: map['studentNumber'] as String,
+      pin: map['pin'] != null ? map['pin'] as String : null,
       name: map['name'] as String,
       surname: map['surname'] as String,
-      department: map['department'] as String,
-      course: map['course'] as String,
-      status: map['status'] as String,
+      gender: map['gender'] as String,
+      faculty: map['faculty'] as String,
+      qualification: map['qualification'] as String,
+      level: map['level'] as String,
+      campus: map['campus'] as String,
+      number: map['number'] as String,
       isFunded: map['isFunded'] as String,
-      laptopModel: map['laptopModel'] != null
-          ? LaptopModel.fromMap(map['laptopModel'] as Map<String, dynamic>)
-          : null,
     );
   }
 
@@ -80,7 +94,7 @@ class StudentModel {
 
   @override
   String toString() {
-    return 'StudentModel(studentNumber: $studentNumber, name: $name, surname: $surname, department: $department, course: $course, status: $status, isFunded: $isFunded, laptopModel: $laptopModel)';
+    return 'StudentModel(studentNumber: $studentNumber, pin: $pin, name: $name, surname: $surname, gender: $gender, faculty: $faculty, qualification: $qualification, level: $level, campus: $campus, number: $number, isFunded: $isFunded)';
   }
 
   @override
@@ -88,24 +102,30 @@ class StudentModel {
     if (identical(this, other)) return true;
 
     return other.studentNumber == studentNumber &&
+        other.pin == pin &&
         other.name == name &&
         other.surname == surname &&
-        other.department == department &&
-        other.course == course &&
-        other.status == status &&
-        other.isFunded == isFunded &&
-        other.laptopModel == laptopModel;
+        other.gender == gender &&
+        other.faculty == faculty &&
+        other.qualification == qualification &&
+        other.level == level &&
+        other.campus == campus &&
+        other.number == number &&
+        other.isFunded == isFunded;
   }
 
   @override
   int get hashCode {
     return studentNumber.hashCode ^
+        pin.hashCode ^
         name.hashCode ^
         surname.hashCode ^
-        department.hashCode ^
-        course.hashCode ^
-        status.hashCode ^
-        isFunded.hashCode ^
-        laptopModel.hashCode;
+        gender.hashCode ^
+        faculty.hashCode ^
+        qualification.hashCode ^
+        level.hashCode ^
+        campus.hashCode ^
+        number.hashCode ^
+        isFunded.hashCode;
   }
 }

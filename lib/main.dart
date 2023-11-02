@@ -1,10 +1,12 @@
+// ignore_for_file: unused_import
+
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:wsu_laptops/common/widgets/error_page.dart';
-import 'package:wsu_laptops/common/widgets/loading_page.dart';
-import 'package:wsu_laptops/student/auth/controllers/auth_controller.dart';
+import 'package:wsu_laptops/admin/auth/views/admin_auth_view.dart';
+import 'package:wsu_laptops/admin/auth/views/admin_redirect.dart';
+import 'package:wsu_laptops/create/views/add_redirect_view.dart';
 import 'package:wsu_laptops/student/auth/view/auth_view.dart';
-import 'package:wsu_laptops/student/home/views/home_view.dart';
+import 'package:wsu_laptops/student/auth/view/redirect.dart';
 
 void main() {
   runApp(
@@ -21,28 +23,25 @@ class MyApp extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
-      title: 'WSU Laptops',
+      title: 'WSU Laptops Application Portal',
       theme: ThemeData(
-          useMaterial3: true,
-          brightness: Brightness.light,
-          elevatedButtonTheme: ElevatedButtonThemeData(
-            style: ElevatedButton.styleFrom(
-              backgroundColor: Colors.blueAccent,
-            ),
-          )),
-      home: ref.watch(currentUserAccountProvider).when(
-            data: (user) {
-              print(user?.$id);
-              if (user != null) {
-                return const HomeView();
-              }
-              return const AuthView();
-            },
-            error: (error, st) => ErrorPage(
-              error: error.toString(),
-            ),
-            loading: () => const LoadingPage(),
+        useMaterial3: true,
+        brightness: Brightness.light,
+        scaffoldBackgroundColor: Colors.white,
+        appBarTheme: const AppBarTheme(
+          centerTitle: true,
+          backgroundColor: Colors.white,
+        ),
+        elevatedButtonTheme: ElevatedButtonThemeData(
+          style: ElevatedButton.styleFrom(
+            backgroundColor: Colors.blueAccent,
+            textStyle: const TextStyle(color: Colors.black),
           ),
+        ),
+      ),
+      // home: const AdminRedirectView() //FOR ADMIN APP
+      home: const StudentRedirectView(), // FOR STUDENT APP
+      // home: const AddRedictPage(), // FOR CREATE APP
     );
   }
 }

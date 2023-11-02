@@ -18,6 +18,7 @@ class _AuthPageState extends ConsumerState<AuthView> {
   void _login() {
     if (studentNumberTxtCtrl.text.length == 9 && pinTxtCtrl.text.length == 5) {
       final authCtrl = ref.read(authControllerProvider);
+
       authCtrl.login(
         studentNumber: studentNumberTxtCtrl.text,
         pin: pinTxtCtrl.text,
@@ -32,10 +33,18 @@ class _AuthPageState extends ConsumerState<AuthView> {
   }
 
   @override
+  void initState() {
+    // ref.read(authControllerProvider).logout();
+    studentNumberTxtCtrl.clear();
+    pinTxtCtrl.clear();
+    super.initState();
+  }
+
+  @override
   void dispose() {
+    super.dispose();
     studentNumberTxtCtrl.dispose();
     pinTxtCtrl.dispose();
-    super.dispose();
   }
 
   @override
@@ -49,7 +58,10 @@ class _AuthPageState extends ConsumerState<AuthView> {
               child: Column(
                 mainAxisSize: MainAxisSize.min,
                 children: [
-                  Image.asset('assets/wsu.png'),
+                  Image.asset(
+                    'assets/wsu.png',
+                    height: 60,
+                  ),
                   const Text(
                     'LAPTOP APPLICATIONS',
                     style: TextStyle(
@@ -185,18 +197,20 @@ class _AuthPageState extends ConsumerState<AuthView> {
                                 ),
                               ),
                               const SizedBox(height: 20),
-                              ElevatedButton(
-                                onPressed: () {
-                                  _login();
-                                },
-                                child: const Padding(
-                                  padding: EdgeInsets.all(10.0),
-                                  child: Text(
-                                    'Login',
-                                    style: TextStyle(
-                                      color: Colors.white,
-                                      fontWeight: FontWeight.w500,
-                                      fontSize: 16,
+                              Center(
+                                child: ElevatedButton(
+                                  onPressed: () {
+                                    _login();
+                                  },
+                                  child: const Padding(
+                                    padding: EdgeInsets.all(10.0),
+                                    child: Text(
+                                      'Login',
+                                      style: TextStyle(
+                                        color: Colors.white,
+                                        fontWeight: FontWeight.w500,
+                                        fontSize: 16,
+                                      ),
                                     ),
                                   ),
                                 ),
