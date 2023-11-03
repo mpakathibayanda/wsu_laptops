@@ -22,26 +22,26 @@ class MyApp extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     return MaterialApp(
-      debugShowCheckedModeBanner: false,
-      title: 'WSU Laptops Application Portal',
-      theme: ThemeData(
-        useMaterial3: true,
-        brightness: Brightness.light,
-        scaffoldBackgroundColor: Colors.white,
-        appBarTheme: const AppBarTheme(
-          centerTitle: true,
-          backgroundColor: Colors.white,
-        ),
-        elevatedButtonTheme: ElevatedButtonThemeData(
-          style: ElevatedButton.styleFrom(
-            backgroundColor: Colors.blueAccent,
-            textStyle: const TextStyle(color: Colors.black),
+        debugShowCheckedModeBanner: false,
+        title: 'WSU Laptops Application Portal',
+        theme: ThemeData(
+          useMaterial3: true,
+          brightness: Brightness.light,
+          scaffoldBackgroundColor: Colors.white,
+          appBarTheme: const AppBarTheme(
+            centerTitle: true,
+            backgroundColor: Colors.white,
+          ),
+          elevatedButtonTheme: ElevatedButtonThemeData(
+            style: ElevatedButton.styleFrom(
+              backgroundColor: Colors.blueAccent,
+              textStyle: const TextStyle(color: Colors.black),
+            ),
           ),
         ),
-      ),
-      // home: const AdminRedirectView() //FOR ADMIN APP
-      home: const StudentRedirectView(), // FOR STUDENT APP
-      // home: const AddRedictPage(), // FOR CREATE APP
-    );
+        home: const AdminRedirectView() //FOR ADMIN APP
+        // home: const StudentRedirectView(), // FOR STUDENT APP
+        // home: const AddRedictPage(), // FOR CREATE APP
+        );
   }
 }
