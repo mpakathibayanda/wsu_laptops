@@ -4,5 +4,6 @@
         "type_traits": "cpp",
         "vector": "cpp",
         "xstring": "cpp"
-    }
+    },
+    "cmake.sourceDirectory": "C:/Users/mpaka/Documents/Dev/Projects/Apps/wsu_laptops/windows/flutter"
 }
