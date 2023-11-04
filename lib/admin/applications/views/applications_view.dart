@@ -100,51 +100,61 @@ class _ApplicationsViewState extends ConsumerState<ApplicationsView> {
                           ),
                         ),
                       )
-                    : const Center(
-                        child: Text('NO APPLICATIONS'),
+                    : Scaffold(
+                        appBar: AppBar(),
+                        body: const Center(
+                          child: Text('NO APPLICATIONS'),
+                        ),
                       );
               },
               error: (error, stackTrace) {
                 return const ErrorPage(error: 'Something went wrong');
               },
               loading: () {
-                return Scaffold(
-                  appBar: AppBar(
-                    title: const Text(
-                      'Applications',
-                      style: TextStyle(
-                        fontSize: 22,
-                        fontWeight: FontWeight.bold,
-                      ),
-                    ),
-                    actions: [
-                      IconButton(
-                        onPressed: () async {
-                          showSearch(
-                            context: context,
-                            delegate: AppSearchDelegate(ref),
-                          );
-                        },
-                        icon: const Icon(Icons.search),
-                        tooltip:
-                            'Search application by student number or a name',
-                      ),
-                    ],
-                  ),
-                  body: SafeArea(
-                    child: AppBody(
-                      color: Colors.white,
-                      child: ListView.builder(
-                        itemCount: applications.length,
-                        itemBuilder: (context, index) {
-                          return ApplicationItem(
-                            application: applications[index],
-                          );
-                        },
-                      ),
-                    ),
-                  ),
-                );
+                return applications.isNotEmpty
+                    ? Scaffold(
+                        appBar: AppBar(
+                          title: const Text(
+                            'Applications',
+                            style: TextStyle(
+                              fontSize: 22,
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
+                          actions: [
+                            IconButton(
+                              onPressed: () async {
+                                showSearch(
+                                  context: context,
+                                  delegate: AppSearchDelegate(ref),
+                                );
+                              },
+                              icon: const Icon(Icons.search),
+                              tooltip:
+                                  'Search application by student number or a name',
+                            ),
+                          ],
+                        ),
+                        body: SafeArea(
+                          child: AppBody(
+                            color: Colors.white,
+                            child: ListView.builder(
+                              itemCount: applications.length,
+                              itemBuilder: (context, index) {
+                                return ApplicationItem(
+                                  application: applications[index],
+                                );
+                              },
+                            ),
+                          ),
+                        ),
+                      )
+                    : Scaffold(
+                        appBar: AppBar(),
+                        body: const Center(
+                          child: Text('NO APPLICATIONS'),
+                        ),
+                      );
               },
             );
           },
